@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+        
+        
+<hibernate-mapping>
+    <mapping class="model.Paticipant"/>  
+    <mapping class="model.Club"/>    
+    <mapping class="model.ClubInvitation"/>
+    <mapping class="model.FriendInvitation"/>
+    <mapping class="model.Friend"/>
+    <mapping class="model.GameType"/>
+    <mapping class="model.Match"/>
+    <mapping class="model.Movement"/>
+    <mapping class="model.PaticipantMatch"/>
+    <mapping class="model.PaticipantRoom"/>
+    <mapping class="model.Room"/>
+    <mapping class="model.Tournament"/>
+</hibernate-mapping>
