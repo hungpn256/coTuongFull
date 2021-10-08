@@ -19,40 +19,38 @@ public class PaticipantStatDAO extends DAO {
     public PaticipantStatDAO() {
         super();
     }
-        public List<PaticipantStat> getRank(){
+
+    public List<PaticipantStat> getRank() {
         List<PaticipantStat> res = new ArrayList<PaticipantStat>();
-        PaticipantStat ps = new PaticipantStat();
-        String sql = 
-                "     SELECT paticipantID, COUNT(*) soTranThang ,RANK() OVER(ORDER BY soTranThang) rank_p "
-                + "     FROM tblPaticipantMatch a "
-                + "     WHERE a.result = 'win' "
-                + "     GROUP BY paticipantID) b";
+        String sql
+                = "SELECT a.ID,a.`nickName`, b.soTranThang,b.rank_p,c.soTranDaChoi FROM"
+                + " (SELECT paticipantID, COUNT(*) as soTranThang ,RANK() OVER(ORDER BY COUNT(*) desc) rank_p"
+                + " FROM tblPaticipantMatch"
+                + " WHERE result = 'win'"
+                + " GROUP BY paticipantID"
+                + " Order by count(*) desc) b"
+                + " left join tblPaticipant a "
+                + " on b.paticipantID = a.ID"
+                + " left join  (SELECT paticipantID, COUNT(*) soTranDaChoi"
+                + " FROM tblPaticipantMatch"
+                + " GROUP BY paticipantID) c"
+                + " on b.paticipantID = c.paticipantID";
         try {
             javax.persistence.Query query = session.createNativeQuery(sql);
             List<Object[]> rs = query.getResultList();
-                         
-            for( Object[] lo : rs){
+
+            for (Object[] lo : rs) {
                 PaticipantStat p = new PaticipantStat();
                 p.setId(Integer.parseInt(lo[0].toString()));
-                p.setRankWonGame(Integer.parseInt(lo[1].toString()));
-            }           
-        }catch(Exception e) {
+                p.setNickName(lo[1].toString());
+                p.setWonGame(Integer.parseInt(lo[2].toString()));
+                p.setRank(Integer.parseInt(lo[3].toString()));
+                p.setPlayedGame(Integer.parseInt(lo[4].toString()));
+                res.add(p);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-//        sql = 
-//               "SELECT (b.soTranThang/c.soTranDaChoi) rate,RANK() OVER(ORDER BY rate) rank_p "
-//                + "   FROM ("
-//                + "     SELECT paticipantID, COUNT(*) soTranThang"
-//                + "     FROM tblPaticipantMatch a "
-//                + "     WHERE a.result = 'win' "
-//                + "     GROUP BY a.paticipantID) b , INNER JOIN ("
-//                + "     SELECT paticipantID, COUNT(*) soTranDaChoi"
-//                + "     FROM tblPaticipantMatch"
-//                + "     GROUP BY paticipantID) c ON c.paticipantID = b.paticipantID)"
-//                + "WHERE b.paticipantID = " + Navigator.getPaticipantLogin().getId();
-//        query = session.createNativeQuery(sql);
-//        res = query.getResultList();
-//        ps.setRankWonRate(Integer.parseInt(res.get(0)[0].toString()));
-        return ps;
+        return res;
     }
 }

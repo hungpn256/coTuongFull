@@ -7,6 +7,7 @@ package controller;
 
 import dao.FriendDAO;
 import dao.PaticipantDAO;
+import dao.PaticipantStatDAO;
 import dao.RoomDAO;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
@@ -23,6 +24,7 @@ import model.FriendInvitation;
 import model.IPAddress;
 import model.ObjectWrapper;
 import model.Paticipant;
+import model.PaticipantStat;
 import model.Room;
 import model.RoomInvitation;
 import view.ServerMainFrm;
@@ -62,7 +64,8 @@ public class ServerCtr {
             //System.out.println("server started!");
             view.showMessage("TCP server is running at the port " + myAddress.getPort() + "...");
         } catch (Exception e) {
-            e.printStackTrace();;
+            view.showMessage("Cong da duoc su dung");
+            e.printStackTrace();
         }
     }
 
@@ -314,6 +317,20 @@ public class ServerCtr {
                                     if (paticipant != null) {
                                         fd.acceptFriend(fi);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_FRIEND, "ok"));
+                                        for (ServerProcessing x : myProcess) {
+                                            if (x.getPaticipant() != null && fi.getSender().getId() == x.getPaticipant().getId()) {
+                                                ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                try {
+                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, "false"));
+                                                }
+                                                System.out.println("send data all friend");
+                                            }
+                                        }
                                     } else {
                                         System.out.println("paticipant null");
                                     }
@@ -434,6 +451,22 @@ public class ServerCtr {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, "false"));
                                 }
                                 System.out.println("send invite to room");
+                                break;
+                            }
+                            case ObjectWrapper.GET_RANK: {
+                                try {
+                                    if (paticipant != null) {
+                                        PaticipantStatDAO ps = new PaticipantStatDAO();
+                                        List<PaticipantStat> res = ps.getRank();
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, res));
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, "false"));
+                                }
+                                System.out.println("send get rank");
                                 break;
                             }
 

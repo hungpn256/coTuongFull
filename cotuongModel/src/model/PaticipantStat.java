@@ -11,44 +11,56 @@ import java.io.Serializable;
  *
  * @author phamhung
  */
-public class PaticipantStat extends Paticipant implements Serializable{
+public class PaticipantStat implements Serializable{
     private static final long serialVersionUID = 20210811004L;
-    private int rankWonRate;
-    private int rankWonGame;
-    private int rankTournament;
+    private int id;
+    private String nickName;
+    private int rank;
+    private int wonGame;
+    private int playedGame;
 
     public PaticipantStat() {
     }
 
-    public PaticipantStat(int rankWonRate, int rankWonGame, int rankTournament) {
-        this.rankWonRate = rankWonRate;
-        this.rankWonGame = rankWonGame;
-        this.rankTournament = rankTournament;
+    public int getId() {
+        return id;
     }
 
-    public int getRankWonRate() {
-        return rankWonRate;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setRankWonRate(int rankWonRate) {
-        this.rankWonRate = rankWonRate;
+    public String getNickName() {
+        return nickName;
     }
 
-    public int getRankWonGame() {
-        return rankWonGame;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
-    public void setRankWonGame(int rankWonGame) {
-        this.rankWonGame = rankWonGame;
+    public int getRank() {
+        return rank;
     }
 
-    public int getRankTournament() {
-        return rankTournament;
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
-    public void setRankTournament(int rankTournament) {
-        this.rankTournament = rankTournament;
+    public int getWonGame() {
+        return wonGame;
     }
 
-    
+    public void setWonGame(int wonGame) {
+        this.wonGame = wonGame;
+    }
+
+    public int getPlayedGame() {
+        return playedGame;
+    }
+
+    public void setPlayedGame(int playedGame) {
+        this.playedGame = playedGame;
+    }
+
+
 }

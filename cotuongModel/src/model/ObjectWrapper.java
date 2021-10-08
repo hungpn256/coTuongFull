@@ -55,7 +55,7 @@ public class ObjectWrapper  implements Serializable{
     public static final int REPLY_CREATE_ROOM = 26;
     
     public static final int INVITE_TO_ROOM = 27;
-    public static final int REPLY_INVITE_TO_ROOM = 228;
+    public static final int REPLY_INVITE_TO_ROOM = 28;
     
     public static final int ACCEPT_JOIN_ROOM = 29;
     public static final int REPLY_ACCEPT_JOIN_ROOM = 30;
@@ -68,6 +68,9 @@ public class ObjectWrapper  implements Serializable{
     
     public static final int LEAVE_ROOM = 35;
     public static final int REPLY_LEAVE_ROOM= 36;
+    
+    public static final int GET_RANK = 37;
+    public static final int REPLY_GET_RANK= 38;
     
      
     private int performative;

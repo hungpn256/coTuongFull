@@ -19,6 +19,7 @@ import model.Friend;
 import model.ObjectWrapper;
 import model.Paticipant;
 import model.PaticipantRoom;
+import model.PaticipantStat;
 import model.Room;
 import model.RoomInvitation;
 
@@ -42,9 +43,11 @@ public class HomeFrm extends javax.swing.JFrame {
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LOG_OUT, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CREATE_ROOM, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, this));
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_FRIEND));
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_RANK));
         paticipantLogin = mySocket.getPaticipantLogin();
-        txtName.setText(paticipantLogin.getNickName());
+        txtName.setText(paticipantLogin.getNickName()+"(chua co rank)");
         setTableFriend();
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -111,6 +114,20 @@ public class HomeFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Tham gia room that bai");
         }
     }
+    public void receivedGetRankProcessing(ObjectWrapper data) {
+        if(data.getData() instanceof List){
+            DefaultTableModel mdr = (DefaultTableModel)tableRanking.getModel();
+            mdr.setRowCount(0);
+            List<PaticipantStat> listRank = (List<PaticipantStat>)data.getData();
+            for(PaticipantStat x:listRank){
+                if(x.getId()==paticipantLogin.getId()){
+                    txtName.setText(paticipantLogin.getNickName()+"("+x.getRank()+")");
+                }
+                mdr.addRow(new Object[]{x.getId(),x.getNickName(),x.getWonGame(),x.getPlayedGame(),x.getRank()});
+            }
+        }
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -123,13 +140,6 @@ public class HomeFrm extends javax.swing.JFrame {
         txtNamePaticipant = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         txtName = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        txtWinNumber = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        txtPlayedNumber = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        txtRankNumber = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -155,33 +165,19 @@ public class HomeFrm extends javax.swing.JFrame {
 
         txtName.setText("Name");
 
-        jLabel3.setText("Xếp hạng:");
-
-        jLabel4.setText("Số trận thắng:");
-
-        txtWinNumber.setText("number");
-
-        jLabel6.setText("Số trận đã chơi:");
-
-        txtPlayedNumber.setText("tran thang");
-
-        jLabel8.setText("Rank:");
-
-        txtRankNumber.setText("number");
-
         tableRanking.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "rank", "name", "win", "played"
+                "id", "name", "win", "played", "rank"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -194,6 +190,7 @@ public class HomeFrm extends javax.swing.JFrame {
             tableRanking.getColumnModel().getColumn(1).setResizable(false);
             tableRanking.getColumnModel().getColumn(2).setResizable(false);
             tableRanking.getColumnModel().getColumn(3).setResizable(false);
+            tableRanking.getColumnModel().getColumn(4).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -263,36 +260,22 @@ public class HomeFrm extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(55, 55, 55)
+                .addContainerGap()
+                .addComponent(txtNamePaticipant, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtNamePaticipant, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(txtName))
-                    .addComponent(jLabel3)
+                        .addGap(5, 5, 5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jButton5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtPlayedNumber))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtWinNumber))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtRankNumber))))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtName)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 649, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -315,21 +298,7 @@ public class HomeFrm extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(txtNamePaticipant)
                                     .addComponent(txtName))
-                                .addGap(11, 11, 11)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(txtWinNumber))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel6)
-                                    .addComponent(txtPlayedNumber))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
-                                    .addComponent(txtRankNumber))
-                                .addGap(76, 76, 76)
+                                .addGap(175, 175, 175)
                                 .addComponent(jButton2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButton3)
@@ -382,10 +351,6 @@ public class HomeFrm extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
@@ -394,8 +359,5 @@ public class HomeFrm extends javax.swing.JFrame {
     private javax.swing.JTable tableRanking;
     private javax.swing.JLabel txtName;
     private javax.swing.JLabel txtNamePaticipant;
-    private javax.swing.JLabel txtPlayedNumber;
-    private javax.swing.JLabel txtRankNumber;
-    private javax.swing.JLabel txtWinNumber;
     // End of variables declaration//GEN-END:variables
 }

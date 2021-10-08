@@ -78,7 +78,7 @@ public class LoginFrm extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("bạn chưa có tài khoản? ");
+        jLabel4.setText("Bạn chưa có tài khoản? ");
 
         BRegister.setText("Register");
         BRegister.addActionListener(new java.awt.event.ActionListener() {
@@ -100,11 +100,10 @@ public class LoginFrm extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
                         .addGap(49, 49, 49)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(BLogin)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(usernameTxt)
-                                .addComponent(passwordTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))))
+                            .addComponent(usernameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                            .addComponent(passwordTxt, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(57, 57, 57)
                         .addComponent(jLabel4)
@@ -145,6 +144,7 @@ public class LoginFrm extends javax.swing.JFrame {
         // TODO add your handling code here:
         RegisterFrm register = new RegisterFrm(mySocket);
         register.setVisible(true);
+        
         mySocket.removeFunction(this);
         this.dispose();
     }//GEN-LAST:event_BRegisterActionPerformed
@@ -170,8 +170,10 @@ public class LoginFrm extends javax.swing.JFrame {
         if (data.getData() instanceof Paticipant) {
             Paticipant p = (Paticipant)data.getData();
             mySocket.setPaticipantLogin(p);
+            
             HomeFrm homeView = new HomeFrm(mySocket);
             homeView.setVisible(true);
+            
             mySocket.removeFunction(this);
             this.dispose();
             

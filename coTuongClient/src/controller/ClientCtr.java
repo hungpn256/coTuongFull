@@ -82,6 +82,7 @@ public class ClientCtr {
             myListening.start();
 //            view.showMessage("Connected to the server at host: " + serverAddress.getHost() + ", port: " + serverAddress.getPort());
         } catch (Exception e) {
+//            view.showMessage("Gap loi");
             return false;
         }
         return true;
@@ -246,6 +247,12 @@ public class ClientCtr {
                                             System.out.println("client invite to room recive");
                                             HomeFrm homeView = (HomeFrm) fto.getData();
                                             homeView.receivedInviteToRoomProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_GET_RANK: {
+                                            System.out.println("client get rank recive");
+                                            HomeFrm homeView = (HomeFrm) fto.getData();
+                                            homeView.receivedGetRankProcessing(data);
                                             break;
                                         }
 
