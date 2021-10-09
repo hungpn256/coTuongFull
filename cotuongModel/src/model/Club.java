@@ -45,13 +45,13 @@ public class Club implements Serializable{
     @JoinColumn(name = "createdBy")
     private Paticipant createdBy;
 
-    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
     private List<Paticipant> listPaticipant = new ArrayList<>();;
 
-    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST)
     private List<ClubInvitation> listClubInvitation = new ArrayList<>();
     
-    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST)
     private List<Tournament> listTournament = new ArrayList<>();
     
     public Club() {

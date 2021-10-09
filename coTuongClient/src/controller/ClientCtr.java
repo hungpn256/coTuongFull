@@ -15,11 +15,13 @@ import model.IPAddress;
 import model.ObjectWrapper;
 import model.Paticipant;
 import view.ClientMainFrm;
-import view.FriendJrm;
+import view.CreateClubFrm;
+import view.InvitationJrm;
 import view.GameUIFrm;
 import view.HomeFrm;
 import view.LoginFrm;
 import view.RegisterFrm;
+import view.SearchPaticipantFrm;
 
 /**
  *
@@ -191,31 +193,31 @@ public class ClientCtr {
                                         }
                                         case ObjectWrapper.REPLY_SEARCH_ADD_FRIEND: {
                                             System.out.println("client search friend recive");
-                                            FriendJrm friendView = (FriendJrm) fto.getData();
+                                            InvitationJrm friendView = (InvitationJrm) fto.getData();
                                             friendView.receivedSearchFriendProcessing(data);
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_REQUEST_ADD_FRIEND: {
                                             System.out.println("client add friend recive");
-                                            FriendJrm friendView = (FriendJrm) fto.getData();
+                                            InvitationJrm friendView = (InvitationJrm) fto.getData();
                                             friendView.receivedAddFriendProcessing(data);
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_GET_PENDING_FRIEND: {
                                             System.out.println("client get pending friend recive");
-                                            FriendJrm friendView = (FriendJrm) fto.getData();
+                                            InvitationJrm friendView = (InvitationJrm) fto.getData();
                                             friendView.receivedPendingFriendProcessing(data);
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_ACCEPT_FRIEND: {
                                             System.out.println("client accept friend recive");
-                                            FriendJrm friendView = (FriendJrm) fto.getData();
+                                            InvitationJrm friendView = (InvitationJrm) fto.getData();
                                             friendView.receivedAcceptFriendProcessing(data);
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_DENY_FRIEND: {
                                             System.out.println("client deny friend recive");
-                                            FriendJrm friendView = (FriendJrm) fto.getData();
+                                            InvitationJrm friendView = (InvitationJrm) fto.getData();
                                             friendView.receivedDenyFriendProcessing(data);
                                             break;
                                         }
@@ -255,6 +257,43 @@ public class ClientCtr {
                                             homeView.receivedGetRankProcessing(data);
                                             break;
                                         }
+                                        case ObjectWrapper.REPLY_CREATE_CLUB: {
+                                            System.out.println("client get rank recive");
+                                            CreateClubFrm createClubView = (CreateClubFrm) fto.getData();
+                                            createClubView.receivedCreateClubProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_SEARCH_PATICIPANT: {
+                                            System.out.println("client search paticipant recive");
+                                            SearchPaticipantFrm searchPaticipantView = (SearchPaticipantFrm) fto.getData();
+                                            searchPaticipantView.receivedSearchPaticipantProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_INVITE_TO_CLUB: {
+                                            System.out.println("client invite club paticipant recive");
+                                            SearchPaticipantFrm searchPaticipantView = (SearchPaticipantFrm) fto.getData();
+                                            searchPaticipantView.receivedInviteToClubProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_GET_PENDING_INVITE_TO_CLUB: {
+                                            System.out.println("client invite club paticipant recive");
+                                            InvitationJrm invitationView = (InvitationJrm) fto.getData();
+                                            invitationView.receivedPendingInvitationClubProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_ACCEPT_INVITE_TO_CLUB: {
+                                            System.out.println("client invite club paticipant recive");
+                                            InvitationJrm invitationView = (InvitationJrm) fto.getData();
+                                            invitationView.receivedAcceptInvitationClubProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB: {
+                                            System.out.println("client invite club paticipant recive");
+                                            InvitationJrm invitationView = (InvitationJrm) fto.getData();
+                                            invitationView.receivedDenyInvitationClubProcessing(data);
+                                            break;
+                                        }
+                                        
 
                                     }
                                 }

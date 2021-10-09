@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import model.ClubInvitation;
 import model.FriendInvitation;
 import model.ObjectWrapper;
 import model.Paticipant;
@@ -29,7 +30,7 @@ import model.Paticipant;
  *
  * @author phamhung
  */
-public class FriendJrm extends javax.swing.JFrame implements ActionListener {
+public class InvitationJrm extends javax.swing.JFrame implements ActionListener {
 private ClientCtr mySocket;
     /**
      * Creates new form Friend
@@ -37,18 +38,26 @@ private ClientCtr mySocket;
     
     AddFriendTableModel defaultTableModel;
     PendingFriendTableModel pendingFriendTableModel;
+    PendingClubTableModel pendingClubTableModel;
     List<Paticipant> listPaticipantAddFriend;
     List<FriendInvitation> listPaticipantPendingFriend;
+    List<ClubInvitation> listClubInvitation;
     List<JButton> listBtnAdd;
     List<JButton> listBtnAccept;
     List<JButton> listBtnRemove;
+    
+    List<JButton> listBtnAcceptClub;
+    List<JButton> listBtnDenyClub;
     Paticipant paticipant;
-    public FriendJrm(ClientCtr socket) {
+    public InvitationJrm(ClientCtr socket) {
         listPaticipantAddFriend = new ArrayList<>();
         listPaticipantPendingFriend = new ArrayList<>();
+        listClubInvitation = new ArrayList<>();
         listBtnAdd = new ArrayList<>();
         listBtnAccept = new ArrayList<>();
         listBtnRemove = new ArrayList<>();
+        listBtnAcceptClub = new ArrayList<>();
+        listBtnDenyClub = new ArrayList<>();
         initComponents();
         this.setName("FriendJrm");
         defaultTableModel = new AddFriendTableModel();
@@ -62,6 +71,12 @@ private ClientCtr mySocket;
         tablePendingFriend.getColumn("Accept").setCellRenderer(buttonRenderer);
         tablePendingFriend.getColumn("Remove").setCellRenderer(buttonRenderer);
         tablePendingFriend.addMouseListener(new JTableButtonMouseListener(tablePendingFriend));
+        
+        pendingClubTableModel = new PendingClubTableModel();
+        tablePendingClub.setModel(pendingClubTableModel);
+        tablePendingClub.getColumn("Accept").setCellRenderer(buttonRenderer);
+        tablePendingClub.getColumn("Remove").setCellRenderer(buttonRenderer);
+        tablePendingClub.addMouseListener(new JTableButtonMouseListener(tablePendingClub));
         
         mySocket = socket;
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_SEARCH_ADD_FRIEND, this));
@@ -78,6 +93,12 @@ private ClientCtr mySocket;
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_PENDING_FRIEND, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_FRIEND, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_DENY_FRIEND, this));
+        
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_PENDING_INVITE_TO_CLUB));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_PENDING_INVITE_TO_CLUB, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_INVITE_TO_CLUB, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, this));
+        
     }
 
     @Override
@@ -98,6 +119,23 @@ private ClientCtr mySocket;
                 btnRemoveClick(i);
                 return;
         }
+        for(int i=0; i<listBtnAcceptClub.size(); i++)
+            if(btnClicked.equals(listBtnAcceptClub.get(i))){
+                btnAcceptClubClick(i);
+                return;
+        }
+        for(int i=0; i<listBtnDenyClub.size(); i++)
+            if(btnClicked.equals(listBtnDenyClub.get(i))){
+                btnDenyClubClick(i);
+                return;
+        }
+    }
+    public void btnAcceptClubClick(int i){
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.ACCEPT_INVITE_TO_CLUB, listClubInvitation.get(i)));
+    }
+    
+    public void btnDenyClubClick(int i){
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.DENY_INVITE_TO_CLUB, listClubInvitation.get(i)));
     }
     
     public void btnAcceptClick(int i){
@@ -107,6 +145,7 @@ private ClientCtr mySocket;
     public void btnRemoveClick(int i){
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.DENY_FRIEND, listPaticipantPendingFriend.get(i)));
     }
+    
     public void btnAddClick(int i){
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.REQUEST_ADD_FRIEND, listPaticipantAddFriend.get(i)));
     }
@@ -179,6 +218,42 @@ private ClientCtr mySocket;
             }
         } 
     }
+    
+    class PendingClubTableModel extends DefaultTableModel {
+        private String[] columnNames = {"Id", "Tên Club", "Accept","Remove"};
+        private final Class<?>[] columnTypes = new  Class<?>[] {Long.class, String.class, JButton.class,JButton.class};
+ 
+        @Override public int getColumnCount() {
+            return columnNames.length;
+        }
+ 
+        @Override public int getRowCount() {
+            return listClubInvitation.size();
+        }
+ 
+        @Override public String getColumnName(int columnIndex) {
+            return columnNames[columnIndex];
+        }
+ 
+        @Override public Class<?> getColumnClass(int columnIndex) {
+            return columnTypes[columnIndex];
+        }
+ 
+        @Override public Object getValueAt(final int rowIndex, final int columnIndex) {
+                /*Adding components*/
+            switch (columnIndex) {
+                case 0: 
+                    return listClubInvitation.get(rowIndex).getClub().getId();
+                case 1: 
+                    return listClubInvitation.get(rowIndex).getClub().getName();
+                case 2: 
+                    return listBtnAcceptClub.get(rowIndex);
+                case 3: 
+                    return listBtnDenyClub.get(rowIndex);
+                default: return "Error";
+            }
+        } 
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -198,6 +273,9 @@ private ClientCtr mySocket;
         btnSearch = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTableAddFriend = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tablePendingClub = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -221,6 +299,10 @@ private ClientCtr mySocket;
             }
         });
         jScrollPane2.setViewportView(tablePendingFriend);
+        if (tablePendingFriend.getColumnModel().getColumnCount() > 0) {
+            tablePendingFriend.getColumnModel().getColumn(1).setResizable(false);
+            tablePendingFriend.getColumnModel().getColumn(3).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -290,6 +372,44 @@ private ClientCtr mySocket;
         );
 
         jTabbedPane1.addTab("Kết bạn", jPanel3);
+
+        tablePendingClub.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "ID", "Tên Club", "Đồng ý", "Từ chối"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(tablePendingClub);
+        if (tablePendingClub.getColumnModel().getColumnCount() > 0) {
+            tablePendingClub.getColumnModel().getColumn(1).setResizable(false);
+            tablePendingClub.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Lời mời club", jPanel1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -412,14 +532,53 @@ private ClientCtr mySocket;
         }
     }
     
+    public void receivedPendingInvitationClubProcessing(ObjectWrapper data) {
+        System.out.println("get data list invitation club");        
+        listClubInvitation = (List<ClubInvitation>)data.getData();
+        listBtnAcceptClub.clear();
+        listBtnDenyClub.clear();
+        for (ClubInvitation clubInvitation : listClubInvitation) {
+            JButton btn = new JButton("accept");
+            btn.addActionListener(this);
+            listBtnAcceptClub.add(btn);
+            
+            JButton btnDeny = new JButton("deny");
+            btnDeny.addActionListener(this);
+            listBtnDenyClub.add(btnDeny);
+        }
+        pendingClubTableModel.fireTableDataChanged(); 
+    }
+    public void receivedAcceptInvitationClubProcessing(ObjectWrapper data) {        
+        if (data.getData() instanceof ClubInvitation) {
+            ClubInvitation ci = (ClubInvitation)data.getData();
+            mySocket.getPaticipantLogin().setClub(ci.getClub());
+            mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_PENDING_INVITE_TO_CLUB));
+            JOptionPane.showMessageDialog(this, "Tham gia thành công");
+        } else {
+            JOptionPane.showMessageDialog(this, "Tham gia thất bạt");
+        }
+    }
+    
+    public void receivedDenyInvitationClubProcessing(ObjectWrapper data) {        
+        if (data.getData().equals("ok")) {
+            mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_PENDING_INVITE_TO_CLUB));
+            JOptionPane.showMessageDialog(this, "Từ chối thành công");
+        } else {
+            JOptionPane.showMessageDialog(this, "tu chối thất bại");
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTableAddFriend;
+    private javax.swing.JTable tablePendingClub;
     private javax.swing.JTable tablePendingFriend;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables

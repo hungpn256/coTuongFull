@@ -24,7 +24,7 @@ public class PaticipantDAO extends DAO {
     }
     @SuppressWarnings("unchecked")
     public ArrayList<Paticipant> searchPaticipant(String key) {
-        ArrayList<Paticipant> result = (ArrayList<Paticipant>) session.createQuery("from Paticipant where name like '%" + key + "%'").list();
+        ArrayList<Paticipant> result = (ArrayList<Paticipant>) session.createQuery("from Paticipant where nickName like '%" + key + "%'").list();
         return result;
     }
     

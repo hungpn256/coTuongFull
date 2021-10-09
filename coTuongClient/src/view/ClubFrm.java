@@ -5,6 +5,12 @@
  */
 package view;
 
+import controller.ClientCtr;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import model.Club;
+import model.Paticipant;
+
 /**
  *
  * @author phamhung
@@ -14,10 +20,26 @@ public class ClubFrm extends javax.swing.JFrame {
     /**
      * Creates new form ClubFrm
      */
-    public ClubFrm() {
+    Club club;
+    ClientCtr mySocket;
+    public ClubFrm(ClientCtr mySocket,Club club) {
         initComponents();
+        this.mySocket = mySocket;
+        this.club = club;
+        txtNameClub.setText(club.getName());
+        txtCreatedBy.setText(club.getCreatedBy().getNickName());
+        setTable();
     }
 
+    
+    public void setTable(){
+        List<Paticipant> listPaticipant = club.getListPaticipant();
+        DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
+        dtm.setRowCount(0);
+        for(Paticipant p : listPaticipant){
+            dtm.addRow(new Object[]{p.getId(),p.getUsername(),p.getNickName()});
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -39,11 +61,11 @@ public class ClubFrm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Tên Club");
+        jLabel1.setText("Club");
 
         jLabel2.setText("Tên:");
 
@@ -80,6 +102,11 @@ public class ClubFrm extends javax.swing.JFrame {
         }
 
         jButton1.setText("Thêm người");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Giải đấu");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -163,6 +190,12 @@ public class ClubFrm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        SearchPaticipantFrm spf = new SearchPaticipantFrm(mySocket);
+        spf.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -191,11 +224,6 @@ public class ClubFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClubFrm().setVisible(true);
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

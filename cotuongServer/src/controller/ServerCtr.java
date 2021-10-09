@@ -5,6 +5,7 @@
  */
 package controller;
 
+import dao.ClubDAO;
 import dao.FriendDAO;
 import dao.PaticipantDAO;
 import dao.PaticipantStatDAO;
@@ -18,9 +19,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Club;
 import model.Friend;
 import model.FriendInvitation;
-
+import java.sql.Timestamp;
+import java.util.Date;
+import model.ClubInvitation;
 import model.IPAddress;
 import model.ObjectWrapper;
 import model.Paticipant;
@@ -467,6 +471,122 @@ public class ServerCtr {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, "false"));
                                 }
                                 System.out.println("send get rank");
+                                break;
+                            }
+                            case ObjectWrapper.CREATE_CLUB: {
+                                Club c = (Club)data.getData();
+                                ClubDAO cd = new ClubDAO();
+                                PaticipantDAO pd = new PaticipantDAO();
+                                try {
+                                    if (paticipant != null) {
+                                        c.setCreatedBy(paticipant);
+                                        c.getListPaticipant().add(paticipant);
+                                        c.setCreatedAt(new Timestamp((new Date()).getTime()));
+                                        cd.createClub(c);
+                                        paticipant.setClub(c);
+                                        pd.update(paticipant);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CREATE_CLUB, c));
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CREATE_CLUB, "false"));
+                                }
+                                System.out.println("send get rank");
+                                break;
+                            }
+                            case ObjectWrapper.SEARCH_PATICIPANT: {
+                                PaticipantDAO pd = new PaticipantDAO();
+
+                                try {
+                                    if (paticipant != null) {
+                                        List<Paticipant> listPaticipant = pd.searchPaticipant(data.getData().toString());
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_SEARCH_PATICIPANT, listPaticipant));
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_SEARCH_PATICIPANT, "false"));
+                                }
+                                System.out.println("send data all friend");
+                                break;
+                            }
+                            case ObjectWrapper.INVITE_TO_CLUB: {
+                                ClubInvitation ci = (ClubInvitation) data.getData();
+                                ClubDAO cd = new ClubDAO();
+                                
+                                try {
+                                    
+                                    if (paticipant != null) {
+                                        cd.inviteJoinClub(ci);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_CLUB, "ok"));
+                                        System.out.println("invite club oke");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_CLUB, "false"));
+                                }
+                                System.out.println("send data invite club ");
+                                break;
+                            }
+                            case ObjectWrapper.GET_PENDING_INVITE_TO_CLUB: {
+                                ClubDAO cd = new ClubDAO();
+                                try {
+                                    
+                                    if (paticipant != null) {
+                                        List<ClubInvitation> listCI = cd.getAllPendingClubInvitation(paticipant);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PENDING_INVITE_TO_CLUB, listCI));
+                                        System.out.println("get invitition club oke");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PENDING_INVITE_TO_CLUB, "false"));
+                                }
+                                System.out.println("send data get invitition club ");
+                                break;
+                            }
+                            case ObjectWrapper.ACCEPT_INVITE_TO_CLUB:{
+                                ClubDAO cd = new ClubDAO();
+                                ClubInvitation ci = (ClubInvitation)data.getData();
+                                try {
+                                    
+                                    if (paticipant != null) {
+                                        cd.acceptJoinClub(ci);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_INVITE_TO_CLUB, ci));
+                                        System.out.println("accept invitition club oke");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_INVITE_TO_CLUB, "false"));
+                                }
+                                System.out.println("send data accept invitition club ");
+                                break;
+                            }
+                            case ObjectWrapper.DENY_INVITE_TO_CLUB:{
+                                ClubDAO cd = new ClubDAO();
+                                ClubInvitation ci = (ClubInvitation)data.getData();
+                                try {
+                                    
+                                    if (paticipant != null) {
+                                        cd.denyJoinClub(ci);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, "ok"));
+                                        System.out.println("deny invitition club oke");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, "false"));
+                                }
+                                System.out.println("send data deny invitition club ");
                                 break;
                             }
 

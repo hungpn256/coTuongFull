@@ -42,18 +42,18 @@ public class ClubDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.update(club);
         trans.commit();
         return;
     }
     
-    public void inviteJoinClub(Club c,Paticipant p){
-        ClubInvitation ci = new ClubInvitation(p, c, "pending");
+    public void inviteJoinClub(ClubInvitation ci){
         Transaction trans = session.getTransaction();
         if (!trans.isActive()) {
             trans.begin();
         }
-        session.update(ci);
+        session.save(ci);
         trans.commit();
         return;
     }
@@ -73,7 +73,8 @@ public class ClubDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
-        session.update(ci);
+        session.clear();
+        session.delete(ci);
         session.update(ci.getClub());
         trans.commit();
     }
@@ -83,6 +84,7 @@ public class ClubDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.delete(ci);
         trans.commit();
         return;
@@ -93,6 +95,7 @@ public class ClubDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.delete(c);
         trans.commit();
         return;

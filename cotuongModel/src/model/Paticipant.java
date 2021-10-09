@@ -50,7 +50,7 @@ public class Paticipant implements Serializable{
     @ManyToOne
     @JoinColumn(name = "clubID", nullable = true)
     private Club club;
-//	
+    
     @ManyToOne
     @JoinColumn(name = "tounamentID", nullable = true)
     private Tournament tournament;
@@ -61,7 +61,7 @@ public class Paticipant implements Serializable{
     @OneToMany(mappedBy = "accepter", cascade = CascadeType.ALL)
     private List<FriendInvitation> listPendingFriend = new ArrayList<>();
     
-    @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
     private List<ClubInvitation> listPendingClub = new ArrayList<>();
     
     @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST)
