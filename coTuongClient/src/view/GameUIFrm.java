@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import model.Board;
 import model.Friend;
@@ -40,6 +41,7 @@ public class GameUIFrm extends javax.swing.JFrame {
     public GameUIFrm(ClientCtr socket,Room r) {
         friendOl = new ArrayList<>();
         mySocket = socket;
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         paticipantLogin = mySocket.getPaticipantLogin();
         paticipantRoom = r.getPaticipantRoom().get(r.getPaticipantRoom().size()-1);
         initComponents();
