@@ -7,6 +7,7 @@ package dao;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import model.Paticipant;
 import model.PaticipantRoom;
 import model.Room;
@@ -32,13 +33,20 @@ public class RoomDAO extends DAO{
         return r;
     }
     
+    public List<PaticipantRoom> getPaticipantRoom(long id){
+        Query query = session.createQuery("from PaticipantRoom pr where pr.room.id = "+ id);
+        List<PaticipantRoom> prs = (List<PaticipantRoom>)query.getResultList();
+        return prs;
+    }
+    
     public Room findRoomById(long id){
         Query query = session.createQuery("from Room r where r.id = "+ id);
         Room room  = (Room)query.getSingleResult();
         return room;
     }
     
-    public void joinRoomById(Paticipant paticipantLogin,long id){
+    public Room joinRoomById(Paticipant paticipantLogin,long id){
+        session.clear();
         Room room  = this.findRoomById(id);
         PaticipantRoom pr = new PaticipantRoom();
         pr.setRoom(room);
@@ -46,6 +54,7 @@ public class RoomDAO extends DAO{
         this.createParticipantRoom(pr);
         room.getPaticipantRoom().add(pr);
         this.updateRoom(room);
+        return room;
     }
     public void leaveRoom(Room room){
         System.out.println(room.getPaticipantRoom().size()+" size paticipant room");
@@ -108,6 +117,7 @@ public class RoomDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.update(pr);
         trans.commit();
         return;
@@ -117,6 +127,7 @@ public class RoomDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.delete(pr);
         trans.commit();
         return;
@@ -127,6 +138,8 @@ public class RoomDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        
+        session.clear();
         session.delete(room);
         trans.commit();
         return;

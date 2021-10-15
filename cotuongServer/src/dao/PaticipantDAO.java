@@ -27,7 +27,6 @@ public class PaticipantDAO extends DAO {
         ArrayList<Paticipant> result = (ArrayList<Paticipant>) session.createQuery("from Paticipant where nickName like '%" + key + "%'").list();
         return result;
     }
-    
     public void update(Paticipant p) {
         Transaction trans = session.getTransaction();
         if (!trans.isActive()) {
@@ -35,7 +34,7 @@ public class PaticipantDAO extends DAO {
         }
         session.clear();
         session.update(p);
-        trans.commit();
+        session.flush();
         return;
     }
 

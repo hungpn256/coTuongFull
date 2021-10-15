@@ -6,7 +6,10 @@
 package view;
 
 import controller.ClientCtr;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import model.Club;
 import model.Paticipant;
@@ -26,9 +29,16 @@ public class ClubFrm extends javax.swing.JFrame {
         initComponents();
         this.mySocket = mySocket;
         this.club = club;
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         txtNameClub.setText(club.getName());
         txtCreatedBy.setText(club.getCreatedBy().getNickName());
         setTable();
+        this.addWindowListener( new WindowAdapter(){
+           public void windowClosing(WindowEvent e) {
+               mySocket.removeFunction(this);
+            }
+           
+        });
     }
 
     

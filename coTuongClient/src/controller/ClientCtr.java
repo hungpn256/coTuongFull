@@ -14,6 +14,7 @@ import model.Friend;
 import model.IPAddress;
 import model.ObjectWrapper;
 import model.Paticipant;
+import view.BoardFrm;
 import view.ClientMainFrm;
 import view.CreateClubFrm;
 import view.InvitationJrm;
@@ -50,31 +51,31 @@ public class ClientCtr {
     }
 
     public void run() {
-        try {
-            while (true) {
-                ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
-                System.out.println("client reci");
-                Object obj = ois.readObject();
-                if (obj instanceof ObjectWrapper) {
-                    ObjectWrapper data = (ObjectWrapper) obj;
-                    if (data.getPerformative() == ObjectWrapper.SERVER_INFORM_CLIENT_NUMBER) {
-                        //show change
-                    } else {
-                        for (ObjectWrapper fto : myFunction) {
-                            if (fto.getPerformative() == data.getPerformative()) {
-                                switch (data.getPerformative()) {
-                                    default:
-                                        return;
-                                }
-                                //view.showMessage("Received an object: " + data.getPerformative());
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            while (true) {
+//                ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
+//                System.out.println("client reci");
+//                Object obj = ois.readObject();
+//                if (obj instanceof ObjectWrapper) {
+//                    ObjectWrapper data = (ObjectWrapper) obj;
+//                    if (data.getPerformative() == ObjectWrapper.SERVER_INFORM_CLIENT_NUMBER) {
+//                        //show change
+//                    } else {
+//                        for (ObjectWrapper fto : myFunction) {
+//                            if (fto.getPerformative() == data.getPerformative()) {
+//                                switch (data.getPerformative()) {
+//                                    default:
+//                                        return;
+//                                }
+//                                //view.showMessage("Received an object: " + data.getPerformative());
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     public boolean openConnection() {
@@ -82,9 +83,7 @@ public class ClientCtr {
             mySocket = new Socket(serverAddress.getHost(), serverAddress.getPort());
             myListening = new ClientListening();
             myListening.start();
-//            view.showMessage("Connected to the server at host: " + serverAddress.getHost() + ", port: " + serverAddress.getPort());
         } catch (Exception e) {
-//            view.showMessage("Gap loi");
             return false;
         }
         return true;
@@ -140,7 +139,6 @@ public class ClientCtr {
         System.out.println(myFunction.size());
         for (int i = 0; i < myFunction.size(); i++) {
             ObjectWrapper x = myFunction.get(i);
-            System.out.println(x.getData().getClass() + " " + o.getClass());
             if (o.getClass().toString().contains(x.getData().getClass().toString())) {
                 i--;
                 myFunction.remove(x);
@@ -150,7 +148,6 @@ public class ClientCtr {
     }
 
     class ClientListening extends Thread {
-
         public ClientListening() {
             super();
         }
@@ -158,15 +155,12 @@ public class ClientCtr {
         public void run() {
             while (true) {
                 try {
-
                     ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
                     System.out.println("client reci");
                     Object obj = ois.readObject();
                     if (obj instanceof ObjectWrapper) {
                         ObjectWrapper data = (ObjectWrapper) obj;
                         if (data.getPerformative() == ObjectWrapper.SERVER_INFORM_CLIENT_NUMBER) {
-//                            view.showMessage("Number of client connecting to the server: " + data);
-                            // lam gi do
                             System.out.println("inform client");
                         } else {
                             for (ObjectWrapper fto : myFunction) {
@@ -176,7 +170,6 @@ public class ClientCtr {
                                             System.out.println("client login");
                                             LoginFrm loginView = (LoginFrm) fto.getData();
                                             loginView.receivedDataProcessing(data);
-                                            System.out.println("client login");
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_LOG_OUT: {
@@ -247,8 +240,14 @@ public class ClientCtr {
                                         }
                                         case ObjectWrapper.REPLY_INVITE_TO_ROOM: {
                                             System.out.println("client invite to room recive");
-                                            HomeFrm homeView = (HomeFrm) fto.getData();
-                                            homeView.receivedInviteToRoomProcessing(data);
+                                            if(data.getData() instanceof String){
+                                                GameUIFrm gameView = (GameUIFrm) fto.getData();
+                                                gameView.receivedInviteRoRoomSuccessProcessing(data);
+                                            }
+                                            else{
+                                                HomeFrm homeView = (HomeFrm) fto.getData();
+                                                homeView.receivedInviteToRoomProcessing(data);
+                                            }
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_GET_RANK: {
@@ -293,12 +292,34 @@ public class ClientCtr {
                                             invitationView.receivedDenyInvitationClubProcessing(data);
                                             break;
                                         }
-                                        
+                                        case ObjectWrapper.REPLY_GET_PATICIPANT_ROOM: {
+                                            System.out.println("client REPLY_GET_PATICIPANT_ROOM recive");
+                                            GameUIFrm gameView = (GameUIFrm) fto.getData();
+                                            gameView.receivedGetPaticipantRoomProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_JOIN_ROOM: {
+                                            System.out.println("client REPLY_JOIN_ROOM recive");
+                                            HomeFrm homeView = (HomeFrm) fto.getData();
+                                            homeView.receivedJoinToRoomProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_START_GAME: {
+                                            System.out.println("client REPLY_START_GAME recive");
+                                            BoardFrm boardView = (BoardFrm) fto.getData();
+                                            boardView.receivedStartGameProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_MOVE: {
+                                            System.out.println("client REPLY_MOVE recive");
+                                            BoardFrm boardView = (BoardFrm) fto.getData();
+                                            boardView.receivedMovementProcessing(data);
+                                            break;
+                                        }
 
                                     }
                                 }
                             }
-                            //view.showMessage("Received an object: " + data.getPerformative());
                         }
                     }
                 } catch (Exception e) {

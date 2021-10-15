@@ -5,17 +5,22 @@
  */
 package view;
 
+import java.sql.Timestamp;
 import controller.ClientCtr;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import model.Board;
 import model.Friend;
+import model.Match;
 import model.ObjectWrapper;
 import model.Paticipant;
+import model.PaticipantMatch;
 import model.PaticipantRoom;
 import model.Piece;
 import model.Room;
@@ -33,66 +38,68 @@ public class GameUIFrm extends javax.swing.JFrame {
     Paticipant paticipantLogin;
     PaticipantRoom paticipantRoom;
     List<Friend> friendOl;
+    public boolean myTurn = false;
+    public int myColor = 0;		// 0 = MÀU ĐỎ, 1 = MÀU TRẮNG
     /**
      * Creates new form GameUIFrm
      */
     Piece[][] chessPieces = new Piece[9][10];
+    public BoardFrm board;
+    
+    
     public GameUIFrm(ClientCtr socket,Room r) {
+        initComponents();
         friendOl = new ArrayList<>();
         mySocket = socket;
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         paticipantLogin = mySocket.getPaticipantLogin();
-        paticipantRoom = r.getPaticipantRoom().get(r.getPaticipantRoom().size()-1);
-        initComponents();
-        initialPieces();
+        List<PaticipantRoom> prs = r.getPaticipantRoom();
+        paticipantRoom = prs.get(prs.size()-1);
         room = r;
+        idRoom.setText(r.getId()+"");
+        jTextArea1.setText("");
+        
+        for(PaticipantRoom pr: prs){
+            jTextArea1.append(pr.getPaticipant().getNickName());
+        }
         System.out.println(r.getId()+" id room in game");
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_ROOM, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, this));
+
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_FRIEND));
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 mySocket.removeFunction(this);
+                 mySocket.removeFunction(board);
                 room.getPaticipantRoom().remove(paticipantRoom);
                 mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
             }
         });
+        this.setTitle("GAME CỜ TƯỚNG");
+        
+        board = new BoardFrm(mySocket, this);
+        board.setLayout(null);
+	board.setBounds(0, 0, 700, 700);
+        board.setVisible(true);
+        rightPanel.add(board);
+        
+        if(paticipantLogin.getId() != room.getCreatedBy().getId()){
+            btnStart.setVisible(false);
+            jComboBox1.setVisible(false);
+            btnInvite.setVisible(false);
+            jLabel1.setVisible(false);
+        }
+        txtName.setText(paticipantLogin.getNickName());
+        btnStart.setEnabled(false);
     }
-    public void initialPieces() {
-        //Các quân cờ bên ĐỎ
-        chessPieces[0][0] = new Piece(redColor, "車", 0, 0);
-        chessPieces[1][0] = new Piece(redColor, "馬", 1, 0);
-        chessPieces[2][0] = new Piece(redColor, "相", 2, 0);
-        chessPieces[3][0] = new Piece(redColor, "仕", 3, 0);
-        chessPieces[4][0] = new Piece(redColor, "帥", 4, 0);
-        chessPieces[5][0] = new Piece(redColor, "仕", 5, 0);
-        chessPieces[6][0] = new Piece(redColor, "相", 6, 0);
-        chessPieces[7][0] = new Piece(redColor, "馬", 7, 0);
-        chessPieces[8][0] = new Piece(redColor, "車", 8, 0);
-        chessPieces[1][2] = new Piece(redColor, "炮", 1, 2);
-        chessPieces[7][2] = new Piece(redColor, "炮", 7, 2);
-        chessPieces[0][3] = new Piece(redColor, "兵", 0, 3);
-        chessPieces[2][3] = new Piece(redColor, "兵", 2, 3);
-        chessPieces[4][3] = new Piece(redColor, "兵", 4, 3);
-        chessPieces[6][3] = new Piece(redColor, "兵", 6, 3);
-        chessPieces[8][3] = new Piece(redColor, "兵", 8, 3);
-
-        //Các quân cờ bên TRẮNG
-        chessPieces[0][9] = new Piece(whiteColor, "車", 0, 9);
-        chessPieces[1][9] = new Piece(whiteColor, "馬", 1, 9);
-        chessPieces[2][9] = new Piece(whiteColor, "象", 2, 9);
-        chessPieces[3][9] = new Piece(whiteColor, "士", 3, 9);
-        chessPieces[4][9] = new Piece(whiteColor, "將", 4, 9);
-        chessPieces[5][9] = new Piece(whiteColor, "士", 5, 9);
-        chessPieces[6][9] = new Piece(whiteColor, "象", 6, 9);
-        chessPieces[7][9] = new Piece(whiteColor, "馬", 7, 9);
-        chessPieces[8][9] = new Piece(whiteColor, "車", 8, 9);
-        chessPieces[1][7] = new Piece(whiteColor, "砲", 1, 7);
-        chessPieces[7][7] = new Piece(whiteColor, "砲", 7, 7);
-        chessPieces[0][6] = new Piece(whiteColor, "卒", 0, 6);
-        chessPieces[2][6] = new Piece(whiteColor, "卒", 2, 6);
-        chessPieces[4][6] = new Piece(whiteColor, "卒", 4, 6);
-        chessPieces[6][6] = new Piece(whiteColor, "卒", 6, 6);
-        chessPieces[8][6] = new Piece(whiteColor, "卒", 8, 6);
+    
+    public void setEnable(boolean b){
+        btnStart.setEnabled(b);
+        btnInvite.setEnabled(b);
+        jComboBox1.setEditable(b);
+        
     }
 
     /**
@@ -106,7 +113,7 @@ public class GameUIFrm extends javax.swing.JFrame {
 
         rightPanel = new javax.swing.JPanel();
         leftPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnStart = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         idRoom = new javax.swing.JLabel();
@@ -115,6 +122,7 @@ public class GameUIFrm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         btnLeaveRoom = new javax.swing.JButton();
         btnInvite = new javax.swing.JButton();
+        txtName = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,10 +137,10 @@ public class GameUIFrm extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jButton1.setText("Start");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnStartActionPerformed(evt);
             }
         });
 
@@ -168,6 +176,8 @@ public class GameUIFrm extends javax.swing.JFrame {
             }
         });
 
+        txtName.setText("jLabel3");
+
         javax.swing.GroupLayout leftPanelLayout = new javax.swing.GroupLayout(leftPanel);
         leftPanel.setLayout(leftPanelLayout);
         leftPanelLayout.setHorizontalGroup(
@@ -175,9 +185,10 @@ public class GameUIFrm extends javax.swing.JFrame {
             .addGroup(leftPanelLayout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addGroup(leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtName)
                     .addComponent(btnLeaveRoom)
                     .addComponent(idRoom)
-                    .addComponent(jButton1)
+                    .addComponent(btnStart)
                     .addGroup(leftPanelLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,8 +206,10 @@ public class GameUIFrm extends javax.swing.JFrame {
             .addGroup(leftPanelLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(idRoom)
-                .addGap(79, 79, 79)
-                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtName)
+                .addGap(51, 51, 51)
+                .addComponent(btnStart)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -230,9 +243,11 @@ public class GameUIFrm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.START_GAME,room));
+        
+    }//GEN-LAST:event_btnStartActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
@@ -240,7 +255,6 @@ public class GameUIFrm extends javax.swing.JFrame {
 
     private void btnLeaveRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveRoomActionPerformed
         // TODO add your handling code here:
-        room.getPaticipantRoom().remove(paticipantRoom);
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
     }//GEN-LAST:event_btnLeaveRoomActionPerformed
 
@@ -279,10 +293,39 @@ public class GameUIFrm extends javax.swing.JFrame {
         }
     }
     
+    public void receivedInviteRoRoomSuccessProcessing(ObjectWrapper data) {
+        if (data.getData().equals("ok")) {
+            JOptionPane.showMessageDialog(this, "Moi thanh cong");
+        } else {
+            JOptionPane.showMessageDialog(this, "get friend fail");
+        }
+    }
+    
     public void setComboBox(){
         jComboBox1.removeAllItems();
         for(Friend x:friendOl){
             jComboBox1.addItem(x.getFriend().getNickName() + " #"+x.getFriend().getId());
+        }
+    }
+    
+    public void receivedGetPaticipantRoomProcessing(ObjectWrapper data) {
+        System.out.println("get PaticipantRoom");
+        if(data.getData() instanceof List){
+            List<PaticipantRoom> lpr = (List<PaticipantRoom>)data.getData();
+            room.setPaticipantRoom(lpr);
+            jTextArea1.setText("");
+            if(lpr.size() == 2){
+                btnStart.setEnabled(true);
+            }
+            else{
+                btnStart.setEnabled(false);
+            }
+            for(PaticipantRoom pr: lpr){
+                jTextArea1.append("\n"+pr.getPaticipant().getNickName());
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "get paticippant room fail");
         }
     }
     /**
@@ -292,8 +335,8 @@ public class GameUIFrm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInvite;
     private javax.swing.JButton btnLeaveRoom;
+    private javax.swing.JButton btnStart;
     private javax.swing.JLabel idRoom;
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -301,5 +344,6 @@ public class GameUIFrm extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPanel rightPanel;
+    private javax.swing.JLabel txtName;
     // End of variables declaration//GEN-END:variables
 }

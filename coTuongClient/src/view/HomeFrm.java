@@ -38,17 +38,16 @@ public class HomeFrm extends javax.swing.JFrame {
     public HomeFrm(ClientCtr socket) {
         initComponents();
         mySocket = socket;
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LOG_OUT, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CREATE_ROOM, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, this));
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_FRIEND));
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_RANK));
         paticipantLogin = mySocket.getPaticipantLogin();
         txtName.setText(paticipantLogin.getNickName()+"(chua co rank)");
-        setTableFriend();
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.out.println("home close");
@@ -66,6 +65,12 @@ public class HomeFrm extends javax.swing.JFrame {
         dtm.setRowCount(0);
         for (Friend f : friends) {
             if (f.getFriend().getStatus().equals("online")) {
+                dtm.addRow(new Object[]{f.getFriend().getId(), f.getFriend().getNickName(), f.getFriend().getStatus()});
+            }
+
+        }
+        for (Friend f : friends) {
+            if (f.getFriend().getStatus().equals("busy")) {
                 dtm.addRow(new Object[]{f.getFriend().getId(), f.getFriend().getNickName(), f.getFriend().getStatus()});
             }
 
@@ -96,25 +101,45 @@ public class HomeFrm extends javax.swing.JFrame {
             Room r = (Room)data.getData();
             GameUIFrm gameView = new GameUIFrm(mySocket,r);
             gameView.setVisible(true);
+            
             mySocket.removeFunction(this);
             this.dispose();
+            
         } else {
             JOptionPane.showMessageDialog(this, "Tạo phòng thất bại");
         }
     }
     public void receivedInviteToRoomProcessing(ObjectWrapper data) {
-        
         if (data.getData() instanceof RoomInvitation) {
             RoomInvitation ri = (RoomInvitation)data.getData();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog (this, "bạn có muốn tham gia phòng "+ ri.getRoom().getId(), "Mời", dialogButton);
             if(dialogResult == JOptionPane.YES_OPTION){
                 System.out.println("tham gia");
+                mySocket.sendData(new ObjectWrapper(ObjectWrapper.JOIN_ROOM,ri.getRoom().getId()));
             }
         } else {
             JOptionPane.showMessageDialog(this, "Tham gia room that bai");
         }
     }
+    
+    public void receivedJoinToRoomProcessing(ObjectWrapper data) {
+        System.out.println("accept join room");
+        if(data.getData() instanceof Room){
+            Room room = (Room)data.getData();
+            System.out.println(room.getId());
+            GameUIFrm gameView = new GameUIFrm(mySocket,room);
+            gameView.setVisible(true);
+            
+            
+            mySocket.removeFunction(this);
+            this.dispose();
+        }
+       else {
+            JOptionPane.showMessageDialog(this, "Phòng không tồn tại");
+        }
+    }
+    
     public void receivedGetRankProcessing(ObjectWrapper data) {
         if(data.getData() instanceof List){
             DefaultTableModel mdr = (DefaultTableModel)tableRanking.getModel();
@@ -153,7 +178,7 @@ public class HomeFrm extends javax.swing.JFrame {
         tableFriend = new javax.swing.JTable();
         jButton6 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         txtNamePaticipant.setText("Tên:");
 

@@ -7,6 +7,7 @@ package controller;
 
 import dao.ClubDAO;
 import dao.FriendDAO;
+import dao.MatchDAO;
 import dao.PaticipantDAO;
 import dao.PaticipantStatDAO;
 import dao.RoomDAO;
@@ -25,9 +26,14 @@ import model.FriendInvitation;
 import java.sql.Timestamp;
 import java.util.Date;
 import model.ClubInvitation;
+import model.GameType;
 import model.IPAddress;
+import model.Match;
+import model.Movement;
 import model.ObjectWrapper;
 import model.Paticipant;
+import model.PaticipantMatch;
+import model.PaticipantRoom;
 import model.PaticipantStat;
 import model.Room;
 import model.RoomInvitation;
@@ -131,6 +137,8 @@ public class ServerCtr {
         private Paticipant paticipant;
         //private ObjectInputStream ois;
         //private ObjectOutputStream oos;
+        ObjectInputStream ois;
+        ObjectOutputStream oos;
 
         public Socket getMySocket() {
             return mySocket;
@@ -151,6 +159,7 @@ public class ServerCtr {
         public ServerProcessing(Socket s) {
             super();
             mySocket = s;
+
         }
 
         public void sendData(Object obj) {
@@ -165,8 +174,8 @@ public class ServerCtr {
         public void run() {
             try {
                 while (true) {
-                    ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
-                    ObjectOutputStream oos = new ObjectOutputStream(mySocket.getOutputStream());
+                    ois = new ObjectInputStream(mySocket.getInputStream());
+                    oos = new ObjectOutputStream(mySocket.getOutputStream());
                     Object o = ois.readObject();
                     if (o instanceof ObjectWrapper) {
                         ObjectWrapper data = (ObjectWrapper) o;
@@ -179,7 +188,6 @@ public class ServerCtr {
                                     this.paticipant = paticipant;
                                     System.out.println(paticipant.getId());
                                     List<Friend> friends = paticipant.getListFriend();
-                                    System.out.println(paticipant.getListFriend().size() + "size friend");
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LOGIN_PATICIPANT, paticipant));
                                     for (Friend f : friends) {
                                         for (ServerProcessing x : myProcess) {
@@ -203,6 +211,41 @@ public class ServerCtr {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LOGIN_PATICIPANT, "false"));
                                 }
                                 System.out.println("send data login");
+                                break;
+                            }
+                            case ObjectWrapper.UPDATE_STATUS_PATICIPANT: {
+                                Paticipant paticipant = (Paticipant) data.getData();
+                                PaticipantDAO pd = new PaticipantDAO();
+
+                                if (paticipant != null) {
+                                    this.paticipant.setStatus(paticipant.getStatus());
+                                    pd.update(this.paticipant);
+                                    this.paticipant = paticipant;
+                                    List<Friend> friends = paticipant.getListFriend();
+                                    System.out.println(paticipant.getListFriend().size() + "size friend");
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_STATUS_PATICIPANT, "ok"));
+                                    for (Friend f : friends) {
+                                        for (ServerProcessing x : myProcess) {
+                                            if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
+                                                ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                FriendDAO fd = new FriendDAO();
+
+                                                try {
+                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, "false"));
+                                                }
+                                                System.out.println("send data all friend");
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_STATUS_PATICIPANT, "false"));
+                                }
+                                System.out.println("send data update paticipant");
                                 break;
                             }
                             case ObjectWrapper.REGISTER_PATICIPANT: {
@@ -420,11 +463,33 @@ public class ServerCtr {
                             case ObjectWrapper.LEAVE_ROOM: {
                                 Room r = (Room) data.getData();
                                 RoomDAO roomDAO = new RoomDAO();
-
                                 try {
                                     if (paticipant != null) {
+                                        List<PaticipantRoom> prs = r.getPaticipantRoom();
+                                        for (int i = 0; i < prs.size(); i++) {
+                                            PaticipantRoom pr = prs.get(i);
+                                            if (pr.getPaticipant().getId() == paticipant.getId()) {
+                                                prs.remove(i);
+                                                roomDAO.deleteParticipantRoom(pr);
+                                                break;
+                                            }
+                                        }
                                         roomDAO.leaveRoom(r);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_ROOM, "ok"));
+                                        for (PaticipantRoom pr : prs) {
+                                            for (ServerProcessing x : myProcess) {
+                                                if (x.getPaticipant() != null && pr.getPaticipant().getId() == x.getPaticipant().getId()) {
+                                                    try {
+                                                        ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                        System.out.println(r.getPaticipantRoom() + "size paticipant");
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, r.getPaticipantRoom()));
+
+                                                    } catch (Exception ee) {
+                                                        ee.printStackTrace();
+                                                    }
+                                                }
+                                            }
+                                        }
                                     } else {
                                         System.out.println("paticipant null");
                                     }
@@ -440,6 +505,7 @@ public class ServerCtr {
 
                                 try {
                                     if (paticipant != null) {
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, "ok"));
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && ri.getAcceptor().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
@@ -474,7 +540,7 @@ public class ServerCtr {
                                 break;
                             }
                             case ObjectWrapper.CREATE_CLUB: {
-                                Club c = (Club)data.getData();
+                                Club c = (Club) data.getData();
                                 ClubDAO cd = new ClubDAO();
                                 PaticipantDAO pd = new PaticipantDAO();
                                 try {
@@ -516,9 +582,9 @@ public class ServerCtr {
                             case ObjectWrapper.INVITE_TO_CLUB: {
                                 ClubInvitation ci = (ClubInvitation) data.getData();
                                 ClubDAO cd = new ClubDAO();
-                                
+
                                 try {
-                                    
+
                                     if (paticipant != null) {
                                         cd.inviteJoinClub(ci);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_CLUB, "ok"));
@@ -536,7 +602,7 @@ public class ServerCtr {
                             case ObjectWrapper.GET_PENDING_INVITE_TO_CLUB: {
                                 ClubDAO cd = new ClubDAO();
                                 try {
-                                    
+
                                     if (paticipant != null) {
                                         List<ClubInvitation> listCI = cd.getAllPendingClubInvitation(paticipant);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PENDING_INVITE_TO_CLUB, listCI));
@@ -551,11 +617,11 @@ public class ServerCtr {
                                 System.out.println("send data get invitition club ");
                                 break;
                             }
-                            case ObjectWrapper.ACCEPT_INVITE_TO_CLUB:{
+                            case ObjectWrapper.ACCEPT_INVITE_TO_CLUB: {
                                 ClubDAO cd = new ClubDAO();
-                                ClubInvitation ci = (ClubInvitation)data.getData();
+                                ClubInvitation ci = (ClubInvitation) data.getData();
                                 try {
-                                    
+
                                     if (paticipant != null) {
                                         cd.acceptJoinClub(ci);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_INVITE_TO_CLUB, ci));
@@ -570,11 +636,52 @@ public class ServerCtr {
                                 System.out.println("send data accept invitition club ");
                                 break;
                             }
-                            case ObjectWrapper.DENY_INVITE_TO_CLUB:{
-                                ClubDAO cd = new ClubDAO();
-                                ClubInvitation ci = (ClubInvitation)data.getData();
+
+                            case ObjectWrapper.JOIN_ROOM: {
+                                RoomDAO rd = new RoomDAO();
+                                long idRoom = (long) data.getData();
                                 try {
-                                    
+                                    if (paticipant != null) {
+                                        Room r = rd.joinRoomById(paticipant, idRoom);
+                                        List<PaticipantRoom> prs = r.getPaticipantRoom();
+                                        System.out.println("get-paticipant-room" + prs.size());
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, r));
+                                        for (PaticipantRoom f : prs) {
+                                            for (ServerProcessing x : myProcess) {
+                                                System.out.println(x.getPaticipant().getId() + "ID PATICIPANT");
+                                                if (x.getPaticipant() != null && f.getPaticipant().getId() == x.getPaticipant().getId()) {
+                                                    System.err.println(f.getPaticipant().getId() + " process size " + myProcess.size());
+                                                    ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                    try {
+                                                        System.out.println("send data join room");
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, prs));
+                                                    } catch (Exception e) {
+                                                        System.err.println("send data join room loi");
+                                                        e.printStackTrace();
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, "false"));
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                        System.out.println("REPLY_JOIN_ROOM");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("send data join room loi");
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, "false"));
+                                }
+                                System.out.println("send data join room ");
+                                break;
+                            }
+
+                            case ObjectWrapper.DENY_INVITE_TO_CLUB: {
+                                ClubDAO cd = new ClubDAO();
+                                ClubInvitation ci = (ClubInvitation) data.getData();
+                                try {
+
                                     if (paticipant != null) {
                                         cd.denyJoinClub(ci);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, "ok"));
@@ -587,6 +694,145 @@ public class ServerCtr {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, "false"));
                                 }
                                 System.out.println("send data deny invitition club ");
+                                break;
+                            }
+                            case ObjectWrapper.START_GAME: {
+                                MatchDAO md = new MatchDAO();
+                                Room room = (Room) data.getData();
+                                PaticipantDAO pd = new PaticipantDAO();
+                                try {
+                                    if (paticipant != null) {
+                                        GameType gt = md.getGameTypeById(1);
+                                        Match match = new Match();
+                                        match.setCreateAt(new Timestamp((new Date()).getTime()));
+                                        match.setGameType(gt);
+                                        match.setRoom(room);
+                                        md.createMatch(match);
+                                        PaticipantMatch pm = new PaticipantMatch();
+                                        Paticipant p1 = room.getPaticipantRoom().get(0).getPaticipant();
+                                        p1.setStatus("busy");
+                                        pd.update(p1);
+                                        pm.setColor("red");
+                                        pm.setMatch(match);
+                                        pm.setPaticipant(p1);
+                                        md.createPaticipantMatch(pm);
+
+                                        PaticipantMatch pm2 = new PaticipantMatch();
+                                        Paticipant p2 = room.getPaticipantRoom().get(1).getPaticipant();
+                                        p2.setStatus("busy");
+                                        pd.update(p2);
+                                        pm2.setColor("blue");
+                                        pm2.setMatch(match);
+                                        pm2.setPaticipant(room.getPaticipantRoom().get(1).getPaticipant());
+                                        md.createPaticipantMatch(pm2);
+
+                                        match.getListPaticipantMatch().add(pm);
+                                        match.getListPaticipantMatch().add(pm2);
+
+                                        md.updateMatch(match);
+
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_START_GAME, match));
+                                        for (PaticipantMatch paticipantMatch : match.getListPaticipantMatch()) {
+                                            for (ServerProcessing x : myProcess) {
+                                                if (x.getPaticipant() != null && x.getPaticipant().getId() != this.paticipant.getId() && paticipantMatch.getPaticipant().getId() == x.getPaticipant().getId()) {
+                                                    ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                    try {
+                                                        System.out.println("send new match");
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_START_GAME, match));
+                                                    } catch (Exception e) {
+                                                        System.err.println("send new match loi");
+                                                        e.printStackTrace();
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_START_GAME, "false"));
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                        
+                                        FriendDAO fd = new FriendDAO();
+                                        List<Friend> friends = fd.getAllFriend(p1);
+                                        for (Friend f : friends) {
+                                            for (ServerProcessing x : myProcess) {
+                                                if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
+                                                    ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                    try {
+                                                        List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
+
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, "false"));
+                                                    }
+                                                    System.out.println("send data all friend");
+                                                }
+                                            }
+                                        }
+                                        List<Friend> friends2 = fd.getAllFriend(p2);
+                                        for (Friend f : friends2) {
+                                            for (ServerProcessing x : myProcess) {
+                                                if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
+                                                    ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                    
+
+                                                    try {
+                                                        List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
+
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, "false"));
+                                                    }
+                                                    System.out.println("send data all friend");
+                                                }
+                                            }
+                                        }
+
+                                        System.out.println("deny start game oke");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DENY_INVITE_TO_CLUB, "false"));
+                                }
+                                System.out.println("send start game");
+                                break;
+                            }
+                            case ObjectWrapper.MOVE: {
+                                Movement m = (Movement) data.getData();
+                                oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_MOVE, "ok"));
+                                for (ServerProcessing x : myProcess) {
+                                    if (x.getPaticipant() != null && m.getAccepter().getPaticipant().getId() == x.getPaticipant().getId()) {
+                                        ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                        try {
+                                            System.out.println("send move");
+                                            os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_MOVE, m));
+                                        } catch (Exception e) {
+                                            System.err.println("send move loi");
+                                            e.printStackTrace();
+                                            os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_MOVE, "false"));
+                                        }
+
+                                    }
+                                }
+                                System.out.println("send data deny invitition club ");
+                                break;
+                            }
+                            case ObjectWrapper.UPDATE_PATICIPANT_MATCH: {
+                                PaticipantMatch pm = (PaticipantMatch) data.getData();
+                                if (this.paticipant != null) {
+                                    MatchDAO md = new MatchDAO();
+                                    try {
+                                        md.updatePaticipantMatch(pm);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_PATICIPANT_MATCH, "ok"));
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_PATICIPANT_MATCH, "false"));
+                                    }
+
+                                }
+                                System.out.println("send update paticipant match ");
                                 break;
                             }
 
@@ -607,9 +853,9 @@ public class ServerCtr {
                         for (ServerProcessing x : myProcess) {
                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                 try {
-                                ObjectOutputStream oss = new ObjectOutputStream(x.getMySocket().getOutputStream());
-                                FriendDAO fd = new FriendDAO();
-                                
+                                    ObjectOutputStream oss = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                    FriendDAO fd = new FriendDAO();
+
                                     List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
                                     oss.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
@@ -638,4 +884,3 @@ public class ServerCtr {
         }
     }
 }
-

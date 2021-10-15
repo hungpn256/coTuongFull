@@ -20,6 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  *
@@ -48,9 +50,10 @@ public class Room implements Serializable{
     @Column(name = "status")
     private String status;
     
-    @OneToMany(mappedBy = "room",cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    
+    @OneToMany(mappedBy = "room",cascade = CascadeType.PERSIST)
     private List<Match> Match = new ArrayList<>();
-
+    
     @OneToMany(mappedBy = "room",cascade = CascadeType.PERSIST)
     private List<PaticipantRoom> paticipantRoom = new ArrayList<>();
     

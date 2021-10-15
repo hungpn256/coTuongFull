@@ -55,10 +55,10 @@ public class Paticipant implements Serializable{
     @JoinColumn(name = "tounamentID", nullable = true)
     private Tournament tournament;
     
-    @OneToMany(mappedBy = "paticipant",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST)
     private List<Friend> listFriend = new ArrayList<>();
     
-    @OneToMany(mappedBy = "accepter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accepter", cascade = CascadeType.PERSIST)
     private List<FriendInvitation> listPendingFriend = new ArrayList<>();
     
     @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)

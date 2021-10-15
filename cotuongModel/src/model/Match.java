@@ -50,7 +50,7 @@ public class Match implements Serializable{
     @JoinColumn(name = "gameTypeID")
     private GameType gameType;
     
-    @OneToMany(mappedBy = "match",cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "match",cascade = CascadeType.PERSIST)
     private List<PaticipantMatch> listPaticipantMatch = new ArrayList<>();
     
     @Transient

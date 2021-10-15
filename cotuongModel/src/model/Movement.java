@@ -13,40 +13,26 @@ import java.io.Serializable;
  */
 public class Movement implements Serializable{
     private static final long serialVersionUID = 20210811004L;
-    private String chessName;
-    private String chessColor;
     private int startX;
     private int startY;
     private int endX;
     private int endY;
+    private PaticipantMatch sender;
+    private PaticipantMatch accepter;
 
     public Movement() {
     }
 
-    public Movement(String chessName, String chessColor, int startX, int startY, int endX, int endY) {
-        this.chessName = chessName;
-        this.chessColor = chessColor;
+    public Movement(int startX, int startY, int endX, int endY, PaticipantMatch sender, PaticipantMatch accepter) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
+        this.sender = sender;
+        this.accepter = accepter;
     }
-
-    public String getChessName() {
-        return chessName;
-    }
-
-    public void setChessName(String chessName) {
-        this.chessName = chessName;
-    }
-
-    public String getChessColor() {
-        return chessColor;
-    }
-
-    public void setChessColor(String chessColor) {
-        this.chessColor = chessColor;
-    }
+    
+    
 
     public int getStartX() {
         return startX;
@@ -78,6 +64,22 @@ public class Movement implements Serializable{
 
     public void setEndY(int endY) {
         this.endY = endY;
+    }
+
+    public PaticipantMatch getSender() {
+        return sender;
+    }
+
+    public void setSender(PaticipantMatch sender) {
+        this.sender = sender;
+    }
+
+    public PaticipantMatch getAccepter() {
+        return accepter;
+    }
+
+    public void setAccepter(PaticipantMatch accepter) {
+        this.accepter = accepter;
     }
     
 

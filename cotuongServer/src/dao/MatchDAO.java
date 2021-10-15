@@ -33,8 +33,13 @@ public class MatchDAO extends DAO{
         return;
     }
     
+    public GameType getGameTypeById(long id){
+        GameType gameType = (GameType)session.createQuery("from GameType where id = "+id).getSingleResult();
+        return gameType;
+    }
+    
     public List<GameType> getAllGameType(){
-        List<GameType> listGameType = (List<GameType>)session.createQuery("from GameType");
+        List<GameType> listGameType = (List<GameType>)session.createQuery("from GameType").getResultList();
         return listGameType;
     }
     
@@ -73,9 +78,9 @@ public class MatchDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.update(pm);
         trans.commit();
-        return;
     }
     
     public void updateMatch(Match match){
@@ -83,6 +88,7 @@ public class MatchDAO extends DAO{
         if (!trans.isActive()) {
             trans.begin();
         }
+        session.clear();
         session.update(match);
         trans.commit();
         return;

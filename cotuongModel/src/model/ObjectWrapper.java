@@ -64,8 +64,7 @@ public class ObjectWrapper implements Serializable {
     public static final int DENY_JOIN_ROOM = 31;
     public static final int REPLY_DENY_JOIN_ROOM = 32;
 
-    public static final int JOIN_ROOM = 33;
-    public static final int REPLY_JOIN_ROOM = 34;
+    
 
     public static final int LEAVE_ROOM = 35;
     public static final int REPLY_LEAVE_ROOM = 36;
@@ -90,6 +89,33 @@ public class ObjectWrapper implements Serializable {
 
     public static final int GET_PENDING_INVITE_TO_CLUB = 49;
     public static final int REPLY_GET_PENDING_INVITE_TO_CLUB = 50;
+    
+    public static final int GET_PATICIPANT_ROOM = 51;
+    public static final int REPLY_GET_PATICIPANT_ROOM = 52;
+    
+    public static final int JOIN_ROOM = 53;
+    public static final int REPLY_JOIN_ROOM = 54;
+    
+    public static final int START_GAME = 55;
+    public static final int REPLY_START_GAME = 56;
+    
+    public static final int MOVE = 57;
+    public static final int REPLY_MOVE = 58;
+    
+    public static final int RESULT_MATCH = 59;
+    public static final int REPLY_RESULT_MATCH = 60;
+ 
+    public static final int UPDATE_PATICIPANT_MATCH = 61;
+    public static final int REPLY_UPDATE_PATICIPANT_MATCH = 62;
+    
+    public static final int UPDATE_STATUS_PATICIPANT = 63;
+    public static final int REPLY_UPDATE_STATUS_PATICIPANT = 64;
+    
+    public static final int END_GAME = 65;
+    public static final int REPLY_END_GAME = 66;
+    
+    
+    
 
     private int performative;
     private Object data;

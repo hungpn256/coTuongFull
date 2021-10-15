@@ -8,6 +8,7 @@ package view;
 import controller.ClientCtr;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import model.ObjectWrapper;
 import model.Paticipant;
@@ -25,6 +26,7 @@ public class RegisterFrm extends javax.swing.JFrame {
         initComponents();
         mySocket = socket;
         this.setName("Register");
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_REGISTER_PATICIPANT, this));
         this.addWindowListener( new WindowAdapter(){
            public void windowClosing(WindowEvent e) {

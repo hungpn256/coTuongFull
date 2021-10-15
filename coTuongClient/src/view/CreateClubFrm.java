@@ -8,6 +8,7 @@ package view;
 import controller.ClientCtr;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
 import model.Club;
 import model.ObjectWrapper;
 import model.Paticipant;
@@ -25,6 +26,7 @@ public class CreateClubFrm extends javax.swing.JFrame {
     public CreateClubFrm(ClientCtr socket) {
         initComponents();
         mySocket = socket;
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CREATE_CLUB, this));
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -53,6 +55,12 @@ public class CreateClubFrm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Create Club");
+
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Name");
 
@@ -102,6 +110,10 @@ public class CreateClubFrm extends javax.swing.JFrame {
         c.setName(txtName.getText());
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.CREATE_CLUB,c));
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNameActionPerformed
 
     public void receivedCreateClubProcessing(ObjectWrapper data){
         if(data.getData() instanceof Club){
