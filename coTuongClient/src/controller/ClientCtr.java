@@ -316,6 +316,12 @@ public class ClientCtr {
                                             boardView.receivedMovementProcessing(data);
                                             break;
                                         }
+                                        case ObjectWrapper.REPLY_QUIT_GAME: {
+                                            System.out.println("client REPLY_QUIT_GAME recive");
+                                            BoardFrm boardView = (BoardFrm) fto.getData();
+                                            boardView.receivedChallengerQuitGameProcessing(data);
+                                            break;
+                                        }
 
                                     }
                                 }

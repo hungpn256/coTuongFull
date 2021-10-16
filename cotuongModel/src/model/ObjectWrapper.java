@@ -114,9 +114,11 @@ public class ObjectWrapper implements Serializable {
     public static final int END_GAME = 65;
     public static final int REPLY_END_GAME = 66;
     
+    public static final int QUIT_GAME = 67;
+    public static final int REPLY_QUIT_GAME = 68;
     
     
-
+    
     private int performative;
     private Object data;
 

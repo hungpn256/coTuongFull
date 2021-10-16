@@ -5,9 +5,9 @@
         <group>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/dao/ClubDAO.java</file>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/dao/PaticipantDAO.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/view/ServerMainFrm.java</file>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/controller/ServerCtr.java</file>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/dao/MatchDAO.java</file>
-            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongServer/src/dao/RoomDAO.java</file>
         </group>
     </open-files>
 </project-private>

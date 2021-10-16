@@ -476,6 +476,7 @@ public class ServerCtr {
                                         }
                                         roomDAO.leaveRoom(r);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_ROOM, "ok"));
+                                        System.out.print("oke");
                                         for (PaticipantRoom pr : prs) {
                                             for (ServerProcessing x : myProcess) {
                                                 if (x.getPaticipant() != null && pr.getPaticipant().getId() == x.getPaticipant().getId()) {
@@ -815,7 +816,7 @@ public class ServerCtr {
 
                                     }
                                 }
-                                System.out.println("send data deny invitition club ");
+                                System.out.println("send move " + m.getStartX() + m.getStartY() + m.getEndX() +m.getEndY() );
                                 break;
                             }
                             case ObjectWrapper.UPDATE_PATICIPANT_MATCH: {
@@ -830,6 +831,29 @@ public class ServerCtr {
                                         e.printStackTrace();
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_PATICIPANT_MATCH, "false"));
                                     }
+
+                                }
+                                System.out.println("send update paticipant match ");
+                                break;
+                            }
+                            case ObjectWrapper.QUIT_GAME: {
+                                PaticipantMatch pm = (PaticipantMatch) data.getData();
+                                oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_QUIT_GAME, "rep"));
+                                if (this.paticipant != null) {
+                                    for (ServerProcessing x : myProcess) {
+                                    if (x.getPaticipant() != null && pm.getPaticipant().getId() == x.getPaticipant().getId()) {
+                                        ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                        try {
+                                            System.out.println("send quit game");
+                                            os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_QUIT_GAME, "ok"));
+                                        } catch (Exception e) {
+                                            System.err.println("send quit game loi");
+                                            e.printStackTrace();
+                                            os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_QUIT_GAME, "false"));
+                                        }
+
+                                    }
+                                }
 
                                 }
                                 System.out.println("send update paticipant match ");
