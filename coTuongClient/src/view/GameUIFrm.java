@@ -42,8 +42,6 @@ public class GameUIFrm extends javax.swing.JFrame {
     PaticipantRoom paticipantRoom;
     List<Friend> friendOl;
     public int myColor = 0; // 0 = MÀU ĐỎ, 1 = MÀU TRẮNG
-    Timer timer;
-    int interval = 10;
     /**
      * Creates new form GameUIFrm
      */
@@ -74,11 +72,6 @@ public class GameUIFrm extends javax.swing.JFrame {
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_FRIEND));
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if (board.match != null) {
-                    mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.challenger));
-                }
-                mySocket.removeFunction(this);
-                mySocket.removeFunction(board);
                 room.getPaticipantRoom().remove(paticipantRoom);
                 mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
             }
@@ -294,18 +287,10 @@ public class GameUIFrm extends javax.swing.JFrame {
 
     private void btnLeaveRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveRoomActionPerformed
         // TODO add your handling code here:
-        
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
         System.out.println("o231231ut");
-        if (board.match != null) {
-            System.out.println("out");
-            int dialogButton = JOptionPane.YES_NO_OPTION;
-            int dialogResult = JOptionPane.showConfirmDialog (this, "bạn chắc chắn thoát game? ", "Thoát", dialogButton);
-            if(dialogResult == JOptionPane.YES_OPTION){
-                mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.challenger));
-                mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
-            }
-        }
-       
+
+
     }//GEN-LAST:event_btnLeaveRoomActionPerformed
 
     private void btnInviteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInviteActionPerformed
@@ -333,8 +318,16 @@ public class GameUIFrm extends javax.swing.JFrame {
 
     public void receivedLeaveRoomProcessing(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
+            if (board.match != null) {
+                mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.challenger));
+            }
+            if(board.timer != null ){
+                board.timer.cancel();
+            }
+            JOptionPane.showMessageDialog(this, "Bạn đã rời khỏi phòng");
             HomeFrm home = new HomeFrm(mySocket);
             home.setVisible(true);
+
             mySocket.removeFunction(this);
             mySocket.removeFunction(board);
             this.dispose();

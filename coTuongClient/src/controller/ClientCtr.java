@@ -20,6 +20,7 @@ import view.CreateClubFrm;
 import view.InvitationJrm;
 import view.GameUIFrm;
 import view.HomeFrm;
+import view.JoinRoomByIdFrm;
 import view.LoginFrm;
 import view.RegisterFrm;
 import view.SearchPaticipantFrm;
@@ -300,8 +301,14 @@ public class ClientCtr {
                                         }
                                         case ObjectWrapper.REPLY_JOIN_ROOM: {
                                             System.out.println("client REPLY_JOIN_ROOM recive");
-                                            HomeFrm homeView = (HomeFrm) fto.getData();
-                                            homeView.receivedJoinToRoomProcessing(data);
+                                            if(fto.getData() instanceof HomeFrm){
+                                                HomeFrm homeView = (HomeFrm) fto.getData();
+                                                homeView.receivedJoinToRoomProcessing(data);
+                                            }
+//                                            else if(fto.getData() instanceof JoinRoomByIdFrm){
+//                                                JoinRoomByIdFrm joinRoomView = (JoinRoomByIdFrm) fto.getData();
+//                                                joinRoomView.receivedJoinToRoomProcessing(data);
+//                                            }
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_START_GAME: {

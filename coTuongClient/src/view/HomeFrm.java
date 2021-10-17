@@ -44,6 +44,7 @@ public class HomeFrm extends javax.swing.JFrame {
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_RANK, this));
         mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, this));
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_RANDOM_JOIN, this));
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_FRIEND));
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_RANK));
         paticipantLogin = mySocket.getPaticipantLogin();
@@ -130,8 +131,6 @@ public class HomeFrm extends javax.swing.JFrame {
             System.out.println(room.getId());
             GameUIFrm gameView = new GameUIFrm(mySocket,room);
             gameView.setVisible(true);
-            
-            
             mySocket.removeFunction(this);
             this.dispose();
         }
@@ -240,8 +239,18 @@ public class HomeFrm extends javax.swing.JFrame {
         });
 
         jButton3.setText("Chơi ngẫu nhiên");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Vào phòng");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Đăng xuất");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -384,6 +393,17 @@ public class HomeFrm extends javax.swing.JFrame {
             clubView.setVisible(true);
         }
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.RANDOM_JOIN));
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        JoinRoomByIdFrm j = new JoinRoomByIdFrm(mySocket);
+        j.setVisible(true);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments

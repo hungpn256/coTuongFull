@@ -837,7 +837,10 @@ public class ServerCtr {
                                 break;
                             }
                             case ObjectWrapper.QUIT_GAME: {
+                                PaticipantDAO pd = new PaticipantDAO();
                                 PaticipantMatch pm = (PaticipantMatch) data.getData();
+                                this.paticipant.setStatus("online");
+                                pd.update(this.paticipant);
                                 oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_QUIT_GAME, "rep"));
                                 if (this.paticipant != null) {
                                     for (ServerProcessing x : myProcess) {
@@ -857,6 +860,45 @@ public class ServerCtr {
 
                                 }
                                 System.out.println("send update paticipant match ");
+                                break;
+                            }
+                            case ObjectWrapper.RANDOM_JOIN: {
+                                RoomDAO rd = new RoomDAO();
+                                try {
+                                    if (paticipant != null) {
+                                        Room r = rd.findAndJoinPendingRoom(paticipant);
+                                        System.out.println(r.getId()+"id room");
+                                        List<PaticipantRoom> prs = r.getPaticipantRoom();
+                                        System.out.println("get-paticipant-room" + prs.size());
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, r));
+                                        for (PaticipantRoom f : prs) {
+                                            for (ServerProcessing x : myProcess) {
+                                                System.out.println(x.getPaticipant().getId() + "ID PATICIPANT");
+                                                if (x.getPaticipant() != null && f.getPaticipant().getId() == x.getPaticipant().getId()) {
+                                                    System.err.println(f.getPaticipant().getId() + " process size " + myProcess.size());
+                                                    ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
+                                                    try {
+                                                        System.out.println("send data join room");
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, prs));
+                                                    } catch (Exception e) {
+                                                        System.err.println("send data join room loi");
+                                                        e.printStackTrace();
+                                                        os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_PATICIPANT_ROOM, "false"));
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                        System.out.println("REPLY_JOIN_ROOM");
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("send data join room loi");
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_ROOM, "false"));
+                                }
+                                System.out.println("send data join room ");
                                 break;
                             }
 

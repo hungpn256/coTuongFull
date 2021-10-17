@@ -408,13 +408,16 @@ public class BoardFrm extends JPanel implements MouseListener {
 
             pieces[endX][endY] = pieces[startI][startJ];
             pieces[startI][startJ] = null;
-            this.cchess.repaint();// tô màu nước đi
+            this.repaint();// tô màu nước đi
             lose();
             // thiết lập cho ván chơi mới
         } else {// nếu tướng chưa bị ăn
+            if (pieces[endX][endY] != null) {
+                pieces[endX][endY] = null;
+            }
             pieces[endX][endY] = pieces[startI][startJ];
             pieces[startI][startJ] = null;// di chuyển quân cờ
-            this.cchess.repaint();
+            this.repaint();
             // nếu tướng đã di chuyển
             if (pieces[endX][endY].getName().equals("帥")) {
                 king1x = endX;
@@ -548,11 +551,11 @@ public class BoardFrm extends JPanel implements MouseListener {
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
-                                        if (this.pieces[endX][endY].getName().equals("將")) {
-                                            win();
-                                        } else {
-                                            this.gameNotEnd();
-                                        }
+//                                        if (this.pieces[endX][endY].getName().equals("將")) {
+//                                            win();
+//                                        } else {
+//                                            this.gameNotEnd();
+//                                        }
                                         break;
                                     }
                                 }
@@ -562,11 +565,11 @@ public class BoardFrm extends JPanel implements MouseListener {
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
-                                        if (this.pieces[endX][endY].getName().equals("帥")) {
-                                            win();
-                                        } else {
-                                            this.gameNotEnd();
-                                        }
+//                                        if (this.pieces[endX][endY].getName().equals("帥")) {
+//                                            win();
+//                                        } else {
+//                                            this.gameNotEnd();
+//                                        }
                                         break;
                                     }
                                 }
@@ -612,11 +615,11 @@ public class BoardFrm extends JPanel implements MouseListener {
                                         break;
                                     } else {
                                         if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
-                                            if (this.pieces[endX][endY].getName().equals("將")) {
-                                                win();
-                                            } else {
-                                                this.gameNotEnd();
-                                            }
+//                                            if (this.pieces[endX][endY].getName().equals("將")) {
+//                                                win();
+//                                            } else {
+//                                                this.gameNotEnd();
+//                                            }
                                             break;
                                         }
                                     }
@@ -626,11 +629,11 @@ public class BoardFrm extends JPanel implements MouseListener {
                                         break;
                                     } else {
                                         if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
-                                            if (this.pieces[endX][endY].getName().equals("帥")) {
-                                                win();
-                                            } else {
-                                                this.gameNotEnd();
-                                            }
+//                                            if (this.pieces[endX][endY].getName().equals("帥")) {
+//                                                win();
+//                                            } else {
+//                                                this.gameNotEnd();
+//                                            }
                                             break;
                                         }
                                     }

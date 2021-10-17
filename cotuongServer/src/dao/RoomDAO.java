@@ -76,10 +76,9 @@ public class RoomDAO extends DAO{
     
     public Room findAndJoinPendingRoom(Paticipant paticipantLogin){
         Room room = null;
-        Query query = session.createQuery("from Room r where r.status = 'waiting' and size(r.paticipantRoom) < 2");
-        query.setFirstResult(0);
+        Query query = session.createQuery("from Room r where r.status = 'pending' and size(r.paticipantRoom) < 2");
         try{
-            room = (Room)query.getSingleResult();
+            room = (Room)query.getResultList().get(0);
         }
         catch(Exception e){
             e.printStackTrace();
