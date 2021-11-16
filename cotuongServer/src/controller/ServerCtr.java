@@ -511,7 +511,7 @@ public class ServerCtr {
                                             if (x.getPaticipant() != null && ri.getAcceptor().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_INVITE_TO_ROOM, ri));
-                                                System.out.println("send invite to room");
+                                                System.out.println("send invite to room oke");
                                             }
                                         }
                                     } else {

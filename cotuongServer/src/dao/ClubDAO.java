@@ -74,8 +74,11 @@ public class ClubDAO extends DAO{
             trans.begin();
         }
         session.clear();
-        session.delete(ci);
         session.update(ci.getClub());
+        ci.getPaticipant().setClub(ci.getClub());
+        session.update(ci.getPaticipant());
+        session.delete(ci);
+        
         trans.commit();
     }
     

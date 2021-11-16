@@ -23,8 +23,9 @@ public class Board implements Serializable{
     int king1y = 0;
     int king2x = 4;
     int king2y = 9;
-    List<Movement> movement;
+    Movement lastMovement;
     public Piece pieces[][];
+    public boolean myTurn = false;
 
     // Cấu trúc bàn cờ
     public Board(Piece pieces[][]) {
@@ -79,13 +80,14 @@ public class Board implements Serializable{
         this.pieces = pieces;
     }
 
-    public List<Movement> getMovement() {
-        return movement;
+    public Movement getLastMovement() {
+        return lastMovement;
     }
 
-    public void setMovement(List<Movement> movement) {
-        this.movement = movement;
+    public void setLastMovement(Movement lastMovement) {
+        this.lastMovement = lastMovement;
     }
+
     
 
 }

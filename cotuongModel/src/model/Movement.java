@@ -81,6 +81,4 @@ public class Movement implements Serializable{
     public void setAccepter(PaticipantMatch accepter) {
         this.accepter = accepter;
     }
-    
-
 }

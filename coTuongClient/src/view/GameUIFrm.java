@@ -318,7 +318,7 @@ public class GameUIFrm extends javax.swing.JFrame {
 
     public void receivedLeaveRoomProcessing(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
-            if (board.match != null) {
+            if (board.match != null && board.autoMove == false) {
                 mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.challenger));
             }
             if(board.timer != null ){

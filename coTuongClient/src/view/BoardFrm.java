@@ -23,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import model.Board;
 import model.Match;
 import model.Movement;
 import model.ObjectWrapper;
@@ -33,12 +34,7 @@ import model.Piece;
 public class BoardFrm extends JPanel implements MouseListener {
 
     private int width;	// khoảng cách giữa các dòng
-    private boolean myTurn = false;
     boolean selected = false;
-    int king1x = 4;
-    int king1y = 0;
-    int king2x = 4;
-    int king2y = 9;
     int startX = -1;	// vị trí băt đầu
     int startY = -1;
     int endX = -1;		// vị trí kết thúc
@@ -50,6 +46,7 @@ public class BoardFrm extends JPanel implements MouseListener {
     public Match match;
     public PaticipantMatch paticipantMatch;
     public PaticipantMatch challenger;
+    public Board board;
     ClientCtr mySocket;
     Timer timer;
     int interval = 10;
@@ -59,7 +56,8 @@ public class BoardFrm extends JPanel implements MouseListener {
     public BoardFrm(ClientCtr socket, GameUIFrm chess) {
         mySocket = socket;
         this.cchess = chess;
-        initialPieces();
+
+        newGame();
         this.width = 100;
         rules = new GameRules(pieces);
         this.addMouseListener(this);
@@ -116,21 +114,24 @@ public class BoardFrm extends JPanel implements MouseListener {
 
     public void newGame() {
         initialPieces();
-        king1x = 4;
-        king1y = 0;
-        king2x = 4;
-        king2y = 9;
         startX = -1;	// vị trí băt đầu
         startY = -1;
         endX = -1;		// vị trí kết thúc
         endY = -1;
-        myTurn = false;
+
         selected = false;
         this.autoMove = false;
         this.cchess.setEnable(true);
         this.match = null;
         paticipantMatch = null;
         challenger = null;
+
+        board = new Board(pieces);
+        board.setKing1x(4);
+        board.setKing1y(0);
+        board.setKing2x(4);
+        board.setKing2y(9);
+        board.myTurn = false;
     }
 
     public void paint(Graphics g1) {
@@ -184,7 +185,7 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (this.myTurn == true) {	// nếu đúng đến lượt người chơi
+        if (this.board.myTurn == true) {	// nếu đúng đến lượt người chơi
 
             int i = -1;
             int j = -1;
@@ -194,7 +195,6 @@ public class BoardFrm extends JPanel implements MouseListener {
             System.out.println("click " + i + " " + j);
             if (i >= 0 && i <= 8 && j >= 0 && j <= 9) {	// nếu đang ở trong bàn cờ
                 if (selected == false) {// không có quân cờ nào được chọn
-                    System.out.println("no forcus");
                     this.noFocus(i, j);
                 } else {	// nếu quân cờ đã được chọn trước
                     if (pieces[i][j] != null) {	// quân cờ chọn ở hiện tại
@@ -219,7 +219,7 @@ public class BoardFrm extends JPanel implements MouseListener {
                                         Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
                                         mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, m));
                                     }
-                                    this.myTurn = !this.myTurn;
+                                    this.board.myTurn = !this.board.myTurn;
                                     if (pieces[endX][endY].getName().equals("帥")
                                             || pieces[endX][endY].getName().equals("將")) {
                                         this.win();
@@ -330,16 +330,16 @@ public class BoardFrm extends JPanel implements MouseListener {
         this.cchess.repaint(); // tô màu bước đi
         // cập nhật vị trí tướng
         if (pieces[endX][endY].getName().equals("帥")) {
-            king1x = endX;
-            king1y = endY;
+            this.board.setKing1x(endX);
+            this.board.setKing1y(endY);
         } else if (pieces[endX][endY].getName().equals("將")) {
-            king2x = endX;
-            king2y = endY;
+            this.board.setKing2x(endX);
+            this.board.setKing2y(endY);
         }
-        if (king1x == king2x) {	// luật
+        if (this.board.getKing1x() == this.board.getKing2x()) {	// luật
             int count = 0;
-            for (int n = king1y + 1; n < king2y; ++n) {
-                if (pieces[king1x][n] != null) {
+            for (int n = this.board.getKing1y() + 1; n < this.board.getKing2y(); ++n) {
+                if (pieces[this.board.getKing1x()][n] != null) {
                     count++;
                     break;
                 }
@@ -361,15 +361,20 @@ public class BoardFrm extends JPanel implements MouseListener {
             if (!autoMove) {
                 Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
                 System.out.println(m.getAccepter().getPaticipant().getId());
-                mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, m));
+                this.board.setLastMovement(m);
+                mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, this.board));
             }
 
-            this.myTurn = !this.myTurn;
+            this.board.myTurn = !this.board.myTurn;
             pieces[endX][endY] = pieces[startX][startY];
             pieces[startX][startY] = null;
             pieces[endX][endY].setSelected(false);
             this.cchess.repaint();// tô màu bước đi
 
+            int king1x = this.board.getKing1x();
+            int king1y = this.board.getKing1y();
+            int king2y = this.board.getKing2y();
+            int king2x = this.board.getKing2x();
             // cập nhật vị trí tướng
             if (pieces[endX][endY].getName().equals("帥")) {
                 king1x = endX;
@@ -390,19 +395,21 @@ public class BoardFrm extends JPanel implements MouseListener {
                 if (count == 0) {// thua cuộc
                     lose();
                 }
+
             }
             startX = -1;
             startY = -1;
             endX = -1;
             endY = -1;
             selected = false;
+
         } catch (Exception ee) {
             ee.printStackTrace();
         }
     }
 
     public void move(int startI, int startJ, int endX, int endY) {
-        this.myTurn = !this.myTurn;
+        this.board.myTurn = !this.board.myTurn;
         if (pieces[endX][endY] != null
                 && (pieces[endX][endY].getName().equals("帥") || pieces[endX][endY].getName().equals("將"))) {// tướng bị ăn
 
@@ -418,15 +425,20 @@ public class BoardFrm extends JPanel implements MouseListener {
             pieces[endX][endY] = pieces[startI][startJ];
             pieces[startI][startJ] = null;// di chuyển quân cờ
             this.repaint();
+
             // nếu tướng đã di chuyển
             if (pieces[endX][endY].getName().equals("帥")) {
-                king1x = endX;
-                king1y = endY;
+                this.board.setKing1x(endX);
+                this.board.setKing1y(endY);
             } else if (pieces[endX][endY].getName().equals("將")) {
-                king2x = endX;
-                king2y = endY;
+                this.board.setKing2x(endX);
+                this.board.setKing2y(endY);
             }
 
+            int king1x = this.board.getKing1x();
+            int king1y = this.board.getKing1y();
+            int king2y = this.board.getKing2y();
+            int king2x = this.board.getKing2x();
             if (king1x == king2x) {// 2 tướng trên 1 line
                 int count = 0;
                 for (int n = king1y + 1; n < king2y; ++n) {
@@ -460,6 +472,7 @@ public class BoardFrm extends JPanel implements MouseListener {
         String str = "Bat dau tran dau";
         if (data.getData() instanceof Match) {
             this.match = (Match) data.getData();
+            this.match.setBoard(this.board);
             List<PaticipantMatch> pms = match.getListPaticipantMatch();
             for (int i = 0; i < pms.size(); i++) {
                 PaticipantMatch p = pms.get(i);
@@ -469,7 +482,7 @@ public class BoardFrm extends JPanel implements MouseListener {
                     this.paticipantMatch = p;
                     System.out.println(p.getId() + " me");
                     if (i == 0) {
-                        myTurn = true;
+                        this.board.myTurn = true;
                         System.out.println("luot t");
                         str += "\nBan di truoc";
                     }
@@ -520,7 +533,7 @@ public class BoardFrm extends JPanel implements MouseListener {
         System.out.println("before");
         if (interval <= 1) {
 //            timer.cancel();
-            if (this.myTurn) {
+            if (this.board.myTurn) {
                 try {
                     System.out.println(this.paticipantMatch.getColor());
                     do {
@@ -551,11 +564,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
-//                                        if (this.pieces[endX][endY].getName().equals("將")) {
-//                                            win();
-//                                        } else {
-//                                            this.gameNotEnd();
-//                                        }
                                         break;
                                     }
                                 }
@@ -565,11 +573,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
-//                                        if (this.pieces[endX][endY].getName().equals("帥")) {
-//                                            win();
-//                                        } else {
-//                                            this.gameNotEnd();
-//                                        }
                                         break;
                                     }
                                 }
@@ -615,11 +618,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                                         break;
                                     } else {
                                         if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
-//                                            if (this.pieces[endX][endY].getName().equals("將")) {
-//                                                win();
-//                                            } else {
-//                                                this.gameNotEnd();
-//                                            }
                                             break;
                                         }
                                     }
@@ -629,11 +627,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                                         break;
                                     } else {
                                         if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
-//                                            if (this.pieces[endX][endY].getName().equals("帥")) {
-//                                                win();
-//                                            } else {
-//                                                this.gameNotEnd();
-//                                            }
                                             break;
                                         }
                                     }

@@ -89,7 +89,7 @@ public class RoomDAO extends DAO{
             room.setCreatedBy(paticipantLogin);
             Date date = new Date();
             room.setCreatedAt(new Timestamp(date.getTime()));
-            room.setStatus("waiting");
+            room.setStatus("pending");
             this.createRoom(room);
         }
         PaticipantRoom pr = new PaticipantRoom();

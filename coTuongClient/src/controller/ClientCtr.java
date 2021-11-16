@@ -40,7 +40,7 @@ public class ClientCtr {
 
     public ClientCtr(ClientMainFrm client) {
         super();
-        this.view = view;
+        this.view = client;
         myFunction = new ArrayList<ObjectWrapper>();
     }
 
@@ -52,31 +52,6 @@ public class ClientCtr {
     }
 
     public void run() {
-//        try {
-//            while (true) {
-//                ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
-//                System.out.println("client reci");
-//                Object obj = ois.readObject();
-//                if (obj instanceof ObjectWrapper) {
-//                    ObjectWrapper data = (ObjectWrapper) obj;
-//                    if (data.getPerformative() == ObjectWrapper.SERVER_INFORM_CLIENT_NUMBER) {
-//                        //show change
-//                    } else {
-//                        for (ObjectWrapper fto : myFunction) {
-//                            if (fto.getPerformative() == data.getPerformative()) {
-//                                switch (data.getPerformative()) {
-//                                    default:
-//                                        return;
-//                                }
-//                                //view.showMessage("Received an object: " + data.getPerformative());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     public boolean openConnection() {
@@ -84,6 +59,7 @@ public class ClientCtr {
             mySocket = new Socket(serverAddress.getHost(), serverAddress.getPort());
             myListening = new ClientListening();
             myListening.start();
+            this.view.showMessage("Host:"+serverAddress.getHost()+" Port:"+serverAddress.getPort());
         } catch (Exception e) {
             return false;
         }
@@ -117,7 +93,6 @@ public class ClientCtr {
             oos.writeObject(obj);
 
         } catch (Exception e) {
-            //e.printStackTrace();
             System.err.println("send data fail");
             return false;
         }
@@ -164,7 +139,8 @@ public class ClientCtr {
                         if (data.getPerformative() == ObjectWrapper.SERVER_INFORM_CLIENT_NUMBER) {
                             System.out.println("inform client");
                         } else {
-                            for (ObjectWrapper fto : myFunction) {
+                            for (int i = 0 ; i < myFunction.size() ;i++ ) {
+                                ObjectWrapper fto = myFunction.get(i);
                                 if (fto.getPerformative() == data.getPerformative()) {
                                     switch (data.getPerformative()) {
                                         case ObjectWrapper.REPLY_LOGIN_PATICIPANT: {

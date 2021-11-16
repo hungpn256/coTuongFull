@@ -170,11 +170,10 @@ public class LoginFrm extends javax.swing.JFrame {
         if (data.getData() instanceof Paticipant) {
             Paticipant p = (Paticipant)data.getData();
             mySocket.setPaticipantLogin(p);
+            mySocket.removeFunction(this);
             
             HomeFrm homeView = new HomeFrm(mySocket);
             homeView.setVisible(true);
-            
-            mySocket.removeFunction(this);
             this.dispose();
             
         } else {

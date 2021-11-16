@@ -120,11 +120,14 @@ public class ObjectWrapper implements Serializable {
     public static final int RANDOM_JOIN = 69;
     public static final int REPLY_RANDOM_JOIN = 70;
     
+    public static final int GET_ALL_PATICIPANT_CLUB = 71;
+    public static final int REPLY_GET_ALL_PATICIPANT_CLUB = 72;
+    
     
     
     private int performative;
     private Object data;
-
+    private Paticipant sender;
     public ObjectWrapper() {
         super();
     }
@@ -132,6 +135,12 @@ public class ObjectWrapper implements Serializable {
     public ObjectWrapper(int performative) {
         super();
         this.performative = performative;
+    }
+
+    public ObjectWrapper(Paticipant sender,int performative, Object data) {
+        this.performative = performative;
+        this.data = data;
+        this.sender = sender;
     }
 
     public ObjectWrapper(int performative, Object data) {
@@ -155,4 +164,13 @@ public class ObjectWrapper implements Serializable {
     public void setData(Object data) {
         this.data = data;
     }
+
+    public Paticipant getSender() {
+        return sender;
+    }
+
+    public void setSender(Paticipant sender) {
+        this.sender = sender;
+    }
+    
 }

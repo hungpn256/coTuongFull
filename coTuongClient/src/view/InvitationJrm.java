@@ -39,6 +39,8 @@ private ClientCtr mySocket;
     AddFriendTableModel defaultTableModel;
     PendingFriendTableModel pendingFriendTableModel;
     PendingClubTableModel pendingClubTableModel;
+    List<JButton> listBtnAcceptClub;
+    List<JButton> listBtnDenyClub;
     List<Paticipant> listPaticipantAddFriend;
     List<FriendInvitation> listPaticipantPendingFriend;
     List<ClubInvitation> listClubInvitation;
@@ -46,8 +48,7 @@ private ClientCtr mySocket;
     List<JButton> listBtnAccept;
     List<JButton> listBtnRemove;
     
-    List<JButton> listBtnAcceptClub;
-    List<JButton> listBtnDenyClub;
+    
     Paticipant paticipant;
     public InvitationJrm(ClientCtr socket) {
         listPaticipantAddFriend = new ArrayList<>();
