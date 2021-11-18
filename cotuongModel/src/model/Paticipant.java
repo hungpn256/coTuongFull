@@ -51,10 +51,6 @@ public class Paticipant implements Serializable{
     @JoinColumn(name = "clubID", nullable = true)
     private Club club;
     
-    @ManyToOne
-    @JoinColumn(name = "tounamentID", nullable = true)
-    private Tournament tournament;
-    
     @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST)
     private List<Friend> listFriend = new ArrayList<>();
     
@@ -88,24 +84,22 @@ public class Paticipant implements Serializable{
 
     }
 
-    public Paticipant(long id, String username, String password, String nickName, String status, Club club, Tournament tournament, Club myClub) {
+    public Paticipant(long id, String username, String password, String nickName, String status, Club club,  Club myClub) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.nickName = nickName;
         this.status = status;
         this.club = club;
-        this.tournament = tournament;
         this.myClub = myClub;
     }
 
-    public Paticipant(String username, String password, String nickName, String status, Club club, Tournament tournament, Club myClub) {
+    public Paticipant(String username, String password, String nickName, String status, Club club,  Club myClub) {
         this.username = username;
         this.password = password;
         this.nickName = nickName;
         this.status = status;
         this.club = club;
-        this.tournament = tournament;
         this.myClub = myClub;
     }
 
@@ -157,13 +151,7 @@ public class Paticipant implements Serializable{
         this.club = club;
     }
 
-    public Tournament getTournament() {
-        return tournament;
-    }
 
-    public void setTournament(Tournament tournament) {
-        this.tournament = tournament;
-    }
     public List<Friend> getListFriend() {
         return listFriend;
     }

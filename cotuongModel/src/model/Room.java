@@ -40,10 +40,6 @@ public class Room implements Serializable{
     @JoinColumn(name = "createdBy")
     private Paticipant createdBy;
     
-    @ManyToOne
-    @JoinColumn(name = "tournamentID")
-    private Tournament tournament;
-    
     @Column(name = "createdAt")
     private Timestamp createdAt;
     
@@ -60,19 +56,17 @@ public class Room implements Serializable{
     public Room() {
     }
 
-    public Room(long id, Paticipant createdBy, Tournament tournament, Timestamp createdAt, String status, List<Match> Match, List<PaticipantRoom> paticipantRoom) {
+    public Room(long id, Paticipant createdBy, Timestamp createdAt, String status, List<Match> Match, List<PaticipantRoom> paticipantRoom) {
         this.id = id;
         this.createdBy = createdBy;
-        this.tournament = tournament;
         this.createdAt = createdAt;
         this.status = status;
         this.Match = Match;
         this.paticipantRoom = paticipantRoom;
     }
 
-    public Room(Paticipant createdBy, Tournament tournament, Timestamp createdAt, String status, List<Match> Match,List<PaticipantRoom> paticipantRoom) {
+    public Room(Paticipant createdBy, Timestamp createdAt, String status, List<Match> Match,List<PaticipantRoom> paticipantRoom) {
         this.createdBy = createdBy;
-        this.tournament = tournament;
         this.createdAt = createdAt;
         this.status = status;
         this.Match = Match;
@@ -94,15 +88,7 @@ public class Room implements Serializable{
     public void setCreatedBy(Paticipant createdBy) {
         this.createdBy = createdBy;
     }
-
-    public Tournament getTournament() {
-        return tournament;
-    }
-
-    public void setTournament(Tournament tournament) {
-        this.tournament = tournament;
-    }
-
+    
     public Timestamp getCreatedAt() {
         return createdAt;
     }

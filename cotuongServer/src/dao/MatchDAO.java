@@ -6,7 +6,6 @@
 package dao;
 
 import java.util.List;
-import model.GameType;
 import model.Match;
 import model.Movement;
 import model.Paticipant;
@@ -31,16 +30,6 @@ public class MatchDAO extends DAO{
         session.save(match);
         trans.commit();
         return;
-    }
-    
-    public GameType getGameTypeById(long id){
-        GameType gameType = (GameType)session.createQuery("from GameType where id = "+id).getSingleResult();
-        return gameType;
-    }
-    
-    public List<GameType> getAllGameType(){
-        List<GameType> listGameType = (List<GameType>)session.createQuery("from GameType").getResultList();
-        return listGameType;
     }
     
     public void createPaticipantMatch(PaticipantMatch pm){

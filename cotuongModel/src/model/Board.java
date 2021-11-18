@@ -25,7 +25,6 @@ public class Board implements Serializable{
     int king2y = 9;
     Movement lastMovement;
     public Piece pieces[][];
-    public boolean myTurn = false;
 
     // Cấu trúc bàn cờ
     public Board(Piece pieces[][]) {

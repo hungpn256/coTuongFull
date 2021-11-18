@@ -29,11 +29,9 @@
             <mapping class="model.ClubInvitation"/>
             <mapping class="model.FriendInvitation"/>
             <mapping class="model.Friend"/>
-            <mapping class="model.GameType"/>
             <mapping class="model.Match"/>
             <mapping class="model.PaticipantMatch"/>
             <mapping class="model.PaticipantRoom"/>
             <mapping class="model.Room"/>
-            <mapping class="model.Tournament"/>
 	</session-factory>
 </hibernate-configuration>

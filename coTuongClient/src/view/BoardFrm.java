@@ -40,7 +40,7 @@ public class BoardFrm extends JPanel implements MouseListener {
     int endX = -1;		// vị trí kết thúc
     int endY = -1;
     public Piece[][] pieces = new Piece[9][10];
-
+    public boolean myTurn = false;
     GameUIFrm cchess = null;
     GameRules rules;
     public Match match;
@@ -118,25 +118,28 @@ public class BoardFrm extends JPanel implements MouseListener {
         startY = -1;
         endX = -1;		// vị trí kết thúc
         endY = -1;
-
+        
+        interval = 10;
+        cchess.txtTime.setText(interval+"");
+        if(timer != null){
+            timer.cancel();
+        }
         selected = false;
         this.autoMove = false;
         this.cchess.setEnable(true);
         this.match = null;
         paticipantMatch = null;
         challenger = null;
-
+        this.myTurn = false;
         board = new Board(pieces);
         board.setKing1x(4);
         board.setKing1y(0);
         board.setKing2x(4);
         board.setKing2y(9);
-        board.myTurn = false;
     }
 
     public void paint(Graphics g1) {
         Graphics2D g = (Graphics2D) g1;
-//		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Color c = g.getColor();
         g.setColor(new Color(28, 242, 242));
         g.fill3DRect(70, 30, 580, 630, false);
@@ -164,7 +167,6 @@ public class BoardFrm extends JPanel implements MouseListener {
         Font font2 = new Font(Font.DIALOG, Font.BOLD, 30);
         g.setFont(font2);
 
-        //QUÂN CỜ
         for (int i = 0; i < 9; ++i) {
             for (int j = 0; j < 10; ++j) {
                 if (pieces[i][j] != null) {
@@ -181,11 +183,11 @@ public class BoardFrm extends JPanel implements MouseListener {
                 }
             }
         }
-        g.setColor(c); //reset về màu gốc
+        g.setColor(c);
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (this.board.myTurn == true) {	// nếu đúng đến lượt người chơi
+        if (this.myTurn == true) {
 
             int i = -1;
             int j = -1;
@@ -193,11 +195,11 @@ public class BoardFrm extends JPanel implements MouseListener {
             i = pos[0];
             j = pos[1];
             System.out.println("click " + i + " " + j);
-            if (i >= 0 && i <= 8 && j >= 0 && j <= 9) {	// nếu đang ở trong bàn cờ
-                if (selected == false) {// không có quân cờ nào được chọn
+            if (i >= 0 && i <= 8 && j >= 0 && j <= 9) {
+                if (selected == false) {
                     this.noFocus(i, j);
-                } else {	// nếu quân cờ đã được chọn trước
-                    if (pieces[i][j] != null) {	// quân cờ chọn ở hiện tại
+                } else {
+                    if (pieces[i][j] != null) {
                         if (pieces[i][j].getColor() == pieces[startX][startY].getColor()) {// my piece
                             // lựa chọn
                             System.out.println("lua chon dung");
@@ -210,41 +212,35 @@ public class BoardFrm extends JPanel implements MouseListener {
                             endX = i;
                             endY = j;
                             String name = pieces[startX][startY].getName();
-                            // nếu nước đi hợp lệ
                             boolean canMove = rules.canMove(startX, startY, endX, endY, name);
                             if (canMove) {
                                 try {
                                     interval = 10;
                                     if (!autoMove) {
                                         Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
-                                        mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, m));
-                                    }
-                                    this.board.myTurn = !this.board.myTurn;
-                                    if (pieces[endX][endY].getName().equals("帥")
-                                            || pieces[endX][endY].getName().equals("將")) {
-                                        this.win();
-                                    } else {
-                                        this.gameNotEnd();
+                                        this.board.setLastMovement(m);
+                                        mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, this.board));
                                     }
                                 } catch (Exception ee) {
                                     ee.printStackTrace();
                                 }
                             }
                         }
-                    } else {	// nếu ko có quân cờ nào ở vị trí này
+                    } else {
                         endX = i;
                         endY = j;
                         String name = pieces[startX][startY].getName();
                         boolean canMove = rules.canMove(startX, startY, endX, endY, name);
                         if (canMove) {
-                            this.noPieces();
+                            Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
+                            this.board.setLastMovement(m);
+                            mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, this.board));
                         }
                     }
                 }
             }
-
-            this.repaint();
         }
+        this.repaint();
     }
 
     public int[] getPos(MouseEvent e) {
@@ -288,20 +284,10 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void win() {
-        pieces[endX][endY] = pieces[startX][startY];	//tướng bị ăn
-        pieces[startX][startY] = null;
-        this.repaint();// paint the final move
         if (timer != null) {
             timer.cancel();
         }
-        if (!autoMove) {
-            paticipantMatch.setResult("win");
-            mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_PATICIPANT_MATCH, paticipantMatch));
-        }
-
-        mySocket.getPaticipantLogin().setStatus("online");
         JOptionPane.showMessageDialog(this, "Chúc mừng, bạn thắng!", "THÔNG BÁO", JOptionPane.INFORMATION_MESSAGE);
-        mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_STATUS_PATICIPANT, mySocket.getPaticipantLogin()));
         this.newGame();
         this.repaint();
     }
@@ -310,148 +296,9 @@ public class BoardFrm extends JPanel implements MouseListener {
         if (timer != null) {
             timer.cancel();
         }
-        if (!autoMove) {
-            paticipantMatch.setResult("lose");
-            mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_PATICIPANT_MATCH, paticipantMatch));
-        }
-
-        mySocket.getPaticipantLogin().setStatus("online");
         JOptionPane.showMessageDialog(this, "Bạn đã thua!", "THÔNG BÁO", JOptionPane.INFORMATION_MESSAGE);
-        mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_STATUS_PATICIPANT, mySocket.getPaticipantLogin()));
         // thiết lập cho ván chơi mới
         this.newGame();
-        this.repaint();
-    }
-
-    public void gameNotEnd() {
-        pieces[endX][endY] = pieces[startX][startY];
-        pieces[startX][startY] = null;
-        pieces[endX][endY].setSelected(false);
-        this.cchess.repaint(); // tô màu bước đi
-        // cập nhật vị trí tướng
-        if (pieces[endX][endY].getName().equals("帥")) {
-            this.board.setKing1x(endX);
-            this.board.setKing1y(endY);
-        } else if (pieces[endX][endY].getName().equals("將")) {
-            this.board.setKing2x(endX);
-            this.board.setKing2y(endY);
-        }
-        if (this.board.getKing1x() == this.board.getKing2x()) {	// luật
-            int count = 0;
-            for (int n = this.board.getKing1y() + 1; n < this.board.getKing2y(); ++n) {
-                if (pieces[this.board.getKing1x()][n] != null) {
-                    count++;
-                    break;
-                }
-            }
-            if (count == 0) {// luật
-                lose();
-            }
-        }
-        startX = -1;
-        startY = -1;
-        endX = -1;
-        endY = -1;
-        selected = false;
-    }
-
-    public void noPieces() {
-        try {
-            interval = 10;
-            if (!autoMove) {
-                Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
-                System.out.println(m.getAccepter().getPaticipant().getId());
-                this.board.setLastMovement(m);
-                mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, this.board));
-            }
-
-            this.board.myTurn = !this.board.myTurn;
-            pieces[endX][endY] = pieces[startX][startY];
-            pieces[startX][startY] = null;
-            pieces[endX][endY].setSelected(false);
-            this.cchess.repaint();// tô màu bước đi
-
-            int king1x = this.board.getKing1x();
-            int king1y = this.board.getKing1y();
-            int king2y = this.board.getKing2y();
-            int king2x = this.board.getKing2x();
-            // cập nhật vị trí tướng
-            if (pieces[endX][endY].getName().equals("帥")) {
-                king1x = endX;
-                king1y = endY;
-            } else if (pieces[endX][endY].getName().equals("將")) {
-                king2x = endX;
-                king2y = endY;
-            }
-            if (king1x == king2x)// điều kiện thua
-            {
-                int count = 0;
-                for (int n = king1y + 1; n < king2y; ++n) {
-                    if (pieces[king1x][n] != null) {
-                        count++;
-                        break;
-                    }
-                }
-                if (count == 0) {// thua cuộc
-                    lose();
-                }
-
-            }
-            startX = -1;
-            startY = -1;
-            endX = -1;
-            endY = -1;
-            selected = false;
-
-        } catch (Exception ee) {
-            ee.printStackTrace();
-        }
-    }
-
-    public void move(int startI, int startJ, int endX, int endY) {
-        this.board.myTurn = !this.board.myTurn;
-        if (pieces[endX][endY] != null
-                && (pieces[endX][endY].getName().equals("帥") || pieces[endX][endY].getName().equals("將"))) {// tướng bị ăn
-
-            pieces[endX][endY] = pieces[startI][startJ];
-            pieces[startI][startJ] = null;
-            this.repaint();// tô màu nước đi
-            lose();
-            // thiết lập cho ván chơi mới
-        } else {// nếu tướng chưa bị ăn
-            if (pieces[endX][endY] != null) {
-                pieces[endX][endY] = null;
-            }
-            pieces[endX][endY] = pieces[startI][startJ];
-            pieces[startI][startJ] = null;// di chuyển quân cờ
-            this.repaint();
-
-            // nếu tướng đã di chuyển
-            if (pieces[endX][endY].getName().equals("帥")) {
-                this.board.setKing1x(endX);
-                this.board.setKing1y(endY);
-            } else if (pieces[endX][endY].getName().equals("將")) {
-                this.board.setKing2x(endX);
-                this.board.setKing2y(endY);
-            }
-
-            int king1x = this.board.getKing1x();
-            int king1y = this.board.getKing1y();
-            int king2y = this.board.getKing2y();
-            int king2x = this.board.getKing2x();
-            if (king1x == king2x) {// 2 tướng trên 1 line
-                int count = 0;
-                for (int n = king1y + 1; n < king2y; ++n) {
-                    if (pieces[king1x][n] != null) {
-                        count++;
-                        break;
-                    }
-                }
-                if (count == 0) {
-                    win();
-                }
-            }
-        }
         this.repaint();
     }
 
@@ -468,7 +315,6 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void receivedStartGameProcessing(ObjectWrapper data) {
-        System.out.println("get PaticipantRoom");
         String str = "Bat dau tran dau";
         if (data.getData() instanceof Match) {
             this.match = (Match) data.getData();
@@ -477,17 +323,12 @@ public class BoardFrm extends JPanel implements MouseListener {
             for (int i = 0; i < pms.size(); i++) {
                 PaticipantMatch p = pms.get(i);
                 if (p.getPaticipant().getId() == mySocket.getPaticipantLogin().getId()) {
-                    mySocket.getPaticipantLogin().setStatus("busy");
-//                    mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_STATUS_PATICIPANT,mySocket.getPaticipantLogin()));
                     this.paticipantMatch = p;
-                    System.out.println(p.getId() + " me");
                     if (i == 0) {
-                        this.board.myTurn = true;
-                        System.out.println("luot t");
+                        this.myTurn = true;
                         str += "\nBan di truoc";
                     }
                 } else {
-                    System.out.println(p.getId() + " challenger");
                     challenger = p;
                 }
             }
@@ -501,21 +342,38 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void receivedMovementProcessing(ObjectWrapper data) {
-        if (data.getData() instanceof Movement) {
-            Movement m = (Movement) data.getData();
-            this.move(m.getStartX(), m.getStartY(), m.getEndX(), m.getEndY());
+        if (data.getData() instanceof Board) {
+            Board board = (Board) data.getData();
+            Movement m = board.getLastMovement();
+            this.board = board;
+            this.myTurn = !this.myTurn;
+            System.err.println("this.board.myTurn"+this.myTurn);
+            this.pieces = board.getPieces();
+            this.repaint();
+            startX = -1;
+            startY = -1;
+            endX = -1;
+            endY = -1;
+            selected = false;
             interval = 10;
+        }
+        else{
+           if(data.getData().equals("win")){
+               win();
+           }
+           else if(data.getData().equals("lose")){
+               lose();
+           }
         }
     }
 
     public void receivedChallengerQuitGameProcessing(ObjectWrapper data) {
-        if (data.getData().equals("ok")) {
-            autoMove = true;
-            paticipantMatch.setResult("win");
-            mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_PATICIPANT_MATCH, paticipantMatch));
-            challenger.setResult("lose");
-            mySocket.sendData(new ObjectWrapper(ObjectWrapper.UPDATE_PATICIPANT_MATCH, challenger));
-            JOptionPane.showMessageDialog(null, "Đối thủ đã thoát, Bạn đã được xử thắng, bạn sẽ đánh với máy");
+        if (data.getData().equals("win")) {
+            JOptionPane.showMessageDialog(this, "Đối thủ đã thoát, Bạn đã được xử thắng");     
+            mySocket.removeFunction(this);
+            mySocket.removeFunction(cchess);
+            cchess.dispose();
+            new HomeFrm(mySocket).setVisible(true);
         }
     }
 
@@ -523,17 +381,15 @@ public class BoardFrm extends JPanel implements MouseListener {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                System.out.println(waitingMove());
+                waitingMove();
                 cchess.txtTime.setText(interval + "");
             }
         }, 1000, 1000);
     }
 
     public int waitingMove() {
-        System.out.println("before");
         if (interval <= 1) {
-//            timer.cancel();
-            if (this.board.myTurn) {
+            if (this.myTurn) {
                 try {
                     System.out.println(this.paticipantMatch.getColor());
                     do {
@@ -550,17 +406,14 @@ public class BoardFrm extends JPanel implements MouseListener {
                                 }
                             }
                         }
-
                     } while (true);
                     System.out.println(this.pieces[startX][startY].getColor().toString() + startX + " " + startY + " " + endX + " " + endY);
                     while (true) {
                         endX = (int) Math.round(Math.random() * 8);
                         endY = (int) Math.round(Math.random() * 9);
                         if (rules.canMove(startX, startY, endX, endY, pieces[startX][startY].getName())) {
-                            System.out.println(startX + " " + startY + " " + endX + " " + endY + "11111111111");
                             if (this.paticipantMatch.getColor().equals("red")) {
                                 if (this.pieces[endX][endY] == null) {
-                                    System.out.println(startX + " " + startY + " " + endX + " " + endY + "22222222222");
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
@@ -569,7 +422,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                                 }
                             } else {
                                 if (this.pieces[endX][endY] == null) {
-                                    System.out.println(startX + " " + startY + " " + endX + " " + endY + "33333333333");
                                     break;
                                 } else {
                                     if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
@@ -579,66 +431,13 @@ public class BoardFrm extends JPanel implements MouseListener {
                             }
                         }
                     }
-                    System.out.println(startX + " " + startY + " " + endX + " " + endY);
-                    noPieces();
+                    Movement m = new Movement(startX, startY, endX, endY, paticipantMatch, challenger);
+                    this.board.setLastMovement(m);
+                    mySocket.sendData(new ObjectWrapper(ObjectWrapper.MOVE, this.board));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-            } else {
-                if (autoMove) {
-                    System.out.println("aotomove");
-                    try {
-                        System.out.println(this.paticipantMatch.getColor());
-                        do {
-                            startX = (int) Math.round(Math.random() * 8);
-                            startY = (int) Math.round(Math.random() * 9);
-                            if (this.pieces[startX][startY] != null) {
-                                if (this.paticipantMatch.getColor().equals("red")) {
-                                    if (this.pieces[startX][startY].getColor().equals(GameUIFrm.whiteColor)) {
-                                        break;
-                                    }
-                                } else {
-                                    if (this.pieces[startX][startY].getColor().equals(GameUIFrm.redColor)) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                        } while (true);
-                        System.out.println(this.pieces[startX][startY].getColor().toString() + startX + " " + startY + " " + endX + " " + endY);
-                        while (true) {
-                            endX = (int) Math.round(Math.random() * 8);
-                            endY = (int) Math.round(Math.random() * 9);
-                            if (rules.canMove(startX, startY, endX, endY, pieces[startX][startY].getName())) {
-                                System.out.println(startX + " " + startY + " " + endX + " " + endY + "11111111111");
-                                if (this.paticipantMatch.getColor().equals("red")) {
-                                    if (this.pieces[endX][endY] == null) {
-                                        System.out.println(startX + " " + startY + " " + endX + " " + endY + "22222222222");
-                                        break;
-                                    } else {
-                                        if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.redColor)) {
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    if (this.pieces[endX][endY] == null) {
-                                        System.out.println(startX + " " + startY + " " + endX + " " + endY + "33333333333");
-                                        break;
-                                    } else {
-                                        if (!this.pieces[endX][endY].getColor().equals(GameUIFrm.whiteColor)) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        System.out.println(startX + " " + startY + " " + endX + " " + endY);
-                        noPieces();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
             }
 
         }

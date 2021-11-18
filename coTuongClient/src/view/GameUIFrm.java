@@ -288,7 +288,6 @@ public class GameUIFrm extends javax.swing.JFrame {
     private void btnLeaveRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveRoomActionPerformed
         // TODO add your handling code here:
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
-        System.out.println("o231231ut");
 
 
     }//GEN-LAST:event_btnLeaveRoomActionPerformed
@@ -319,7 +318,8 @@ public class GameUIFrm extends javax.swing.JFrame {
     public void receivedLeaveRoomProcessing(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
             if (board.match != null && board.autoMove == false) {
-                mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.challenger));
+                System.out.println("quit");
+                mySocket.sendData(new ObjectWrapper(ObjectWrapper.QUIT_GAME, board.match));
             }
             if(board.timer != null ){
                 board.timer.cancel();

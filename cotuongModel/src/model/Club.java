@@ -51,8 +51,6 @@ public class Club implements Serializable{
     @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST)
     private List<ClubInvitation> listClubInvitation = new ArrayList<>();
     
-    @OneToMany(mappedBy = "club",cascade = CascadeType.PERSIST)
-    private List<Tournament> listTournament = new ArrayList<>();
     
     public Club() {
         // TODO Auto-generated constructor stub

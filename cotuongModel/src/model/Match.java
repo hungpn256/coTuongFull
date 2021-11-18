@@ -46,10 +46,6 @@ public class Match implements Serializable{
     @Column(name="endAt")
     private Timestamp endAt;
     
-    @ManyToOne
-    @JoinColumn(name = "gameTypeID")
-    private GameType gameType;
-    
     @OneToMany(mappedBy = "match",cascade = CascadeType.PERSIST)
     private List<PaticipantMatch> listPaticipantMatch = new ArrayList<>();
     
@@ -59,20 +55,18 @@ public class Match implements Serializable{
     public Match() {
     }
 
-    public Match(long id, Room room, Timestamp createAt, Timestamp endAt, GameType gameType, Board board) {
+    public Match(long id, Room room, Timestamp createAt, Timestamp endAt, Board board) {
         this.id = id;
         this.room = room;
         this.createAt = createAt;
         this.endAt = endAt;
-        this.gameType = gameType;
         this.board = board;
     }
 
-    public Match(Room room, Timestamp createAt, Timestamp endAt, GameType gameType, Board board) {
+    public Match(Room room, Timestamp createAt, Timestamp endAt, Board board) {
         this.room = room;
         this.createAt = createAt;
         this.endAt = endAt;
-        this.gameType = gameType;
         this.board = board;
     }
 
@@ -125,14 +119,5 @@ public class Match implements Serializable{
     public void setListPaticipantMatch(List<PaticipantMatch> listPaticipantMatch) {
         this.listPaticipantMatch = listPaticipantMatch;
     }
-
-    public GameType getGameType() {
-        return gameType;
-    }
-
-    public void setGameType(GameType gameType) {
-        this.gameType = gameType;
-    }
-    
     
 }
