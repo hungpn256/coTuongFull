@@ -87,15 +87,9 @@ public class JoinRoomByIdFrm extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.JOIN_ROOM, Long.parseLong(jTextField1.getText())));
+        this.dispose();
 
     }//GEN-LAST:event_jButton1ActionPerformed
-    public void receivedJoinToRoomProcessing(ObjectWrapper data) {
-        System.out.println("accept join room join to room");
-        if (data.getData() instanceof Room) {
-            mySocket.removeFunction(this);
-            this.dispose();
-        }
-    }
     /**
      * @param args the command line arguments
      */

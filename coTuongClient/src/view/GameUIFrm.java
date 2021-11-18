@@ -288,7 +288,7 @@ public class GameUIFrm extends javax.swing.JFrame {
     private void btnLeaveRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveRoomActionPerformed
         // TODO add your handling code here:
         mySocket.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_ROOM, room));
-
+        System.out.println("leave");
 
     }//GEN-LAST:event_btnLeaveRoomActionPerformed
 

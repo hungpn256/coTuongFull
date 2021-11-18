@@ -6,6 +6,7 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.List;
 import model.Club;
 import model.ClubInvitation;
 import model.FriendInvitation;
@@ -66,19 +67,21 @@ public class ClubDAO extends DAO{
         return result;
     }
     
+    public List<Paticipant> getAllPaticipantClub(Club club){
+        Query query = session.createQuery("from Paticipant p where p.club.id = " + club.getId());
+        List<Paticipant> result = (List<Paticipant>)query.getResultList();
+        return result;
+    }
+    
     public void acceptJoinClub(ClubInvitation ci){
-       ci.getClub().getListPaticipant().add(ci.getPaticipant());
-       ci.setStatus("accepted");
        Transaction trans = session.getTransaction();
         if (!trans.isActive()) {
             trans.begin();
         }
         session.clear();
-        session.update(ci.getClub());
         ci.getPaticipant().setClub(ci.getClub());
         session.update(ci.getPaticipant());
         session.delete(ci);
-        
         trans.commit();
     }
     

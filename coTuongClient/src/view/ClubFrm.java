@@ -10,9 +10,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Club;
+import model.ObjectWrapper;
 import model.Paticipant;
+import model.Room;
 
 /**
  *
@@ -30,6 +33,8 @@ public class ClubFrm extends javax.swing.JFrame {
         this.mySocket = mySocket;
         this.club = club;
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mySocket.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_PATICIPANT_CLUB,this));
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.GET_ALL_PATICIPANT_CLUB, club));
         txtNameClub.setText(club.getName());
         txtCreatedBy.setText(club.getCreatedBy().getNickName());
         setTable();
@@ -50,6 +55,19 @@ public class ClubFrm extends javax.swing.JFrame {
             dtm.addRow(new Object[]{p.getId(),p.getUsername(),p.getNickName()});
         }
     }
+    
+    public void receivedAllPaticipantClubProcessing(ObjectWrapper data) {
+        System.out.println("accept join room");
+        if(data.getData() instanceof List){
+            club.setListPaticipant((List<Paticipant>)data.getData());
+            setTable();
+        }
+       else {
+            JOptionPane.showMessageDialog(this, "Phòng không tồn tại");
+        }
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -69,7 +87,6 @@ public class ClubFrm extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -125,8 +142,6 @@ public class ClubFrm extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Trở về");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -155,17 +170,11 @@ public class ClubFrm extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane1)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(41, 41, 41)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -190,7 +199,9 @@ public class ClubFrm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 6, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -239,7 +250,6 @@ public class ClubFrm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

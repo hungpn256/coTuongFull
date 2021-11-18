@@ -16,6 +16,7 @@ import model.ObjectWrapper;
 import model.Paticipant;
 import view.BoardFrm;
 import view.ClientMainFrm;
+import view.ClubFrm;
 import view.CreateClubFrm;
 import view.InvitationJrm;
 import view.GameUIFrm;
@@ -281,10 +282,6 @@ public class ClientCtr {
                                                 HomeFrm homeView = (HomeFrm) fto.getData();
                                                 homeView.receivedJoinToRoomProcessing(data);
                                             }
-//                                            else if(fto.getData() instanceof JoinRoomByIdFrm){
-//                                                JoinRoomByIdFrm joinRoomView = (JoinRoomByIdFrm) fto.getData();
-//                                                joinRoomView.receivedJoinToRoomProcessing(data);
-//                                            }
                                             break;
                                         }
                                         case ObjectWrapper.REPLY_START_GAME: {
@@ -303,6 +300,12 @@ public class ClientCtr {
                                             System.out.println("client REPLY_QUIT_GAME recive");
                                             BoardFrm boardView = (BoardFrm) fto.getData();
                                             boardView.receivedChallengerQuitGameProcessing(data);
+                                            break;
+                                        }
+                                        case ObjectWrapper.REPLY_GET_ALL_PATICIPANT_CLUB: {
+                                            System.out.println("client REPLY_GET_ALL_PATICIPANT_CLUB recive");
+                                            ClubFrm view = (ClubFrm) fto.getData();
+                                            view.receivedAllPaticipantClubProcessing(data);
                                             break;
                                         }
 

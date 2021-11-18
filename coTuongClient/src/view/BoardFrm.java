@@ -315,6 +315,7 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void receivedStartGameProcessing(ObjectWrapper data) {
+        System.out.println("start");
         String str = "Bat dau tran dau";
         if (data.getData() instanceof Match) {
             this.match = (Match) data.getData();

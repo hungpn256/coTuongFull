@@ -619,6 +619,23 @@ public class ServerCtr {
                                 System.out.println("send data get invitition club ");
                                 break;
                             }
+                            case ObjectWrapper.GET_ALL_PATICIPANT_CLUB: {
+                                ClubDAO cd = new ClubDAO();
+                                Club c = (Club) data.getData();
+                                try {
+
+                                    if (paticipant != null) {
+                                        List<Paticipant> lp = cd.getAllPaticipantClub(c);
+                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_PATICIPANT_CLUB, lp));
+                                    } else {
+                                        System.out.println("paticipant null");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_PATICIPANT_CLUB, "false"));
+                                }
+                                break;
+                            }
                             case ObjectWrapper.ACCEPT_INVITE_TO_CLUB: {
                                 ClubDAO cd = new ClubDAO();
                                 ClubInvitation ci = (ClubInvitation) data.getData();
@@ -900,25 +917,10 @@ public class ServerCtr {
                                             }
                                         }
                                     }
-                                    break;
                                 }
-                            }
-                            case ObjectWrapper.UPDATE_PATICIPANT_MATCH: {
-                                PaticipantMatch pm = (PaticipantMatch) data.getData();
-                                if (this.paticipant != null) {
-                                    MatchDAO md = new MatchDAO();
-                                    try {
-                                        md.updatePaticipantMatch(pm);
-                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_PATICIPANT_MATCH, "ok"));
 
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_PATICIPANT_MATCH, "false"));
-                                    }
-
-                                }
-                                System.out.println("send update paticipant match ");
                                 break;
+
                             }
                             case ObjectWrapper.QUIT_GAME: {
                                 PaticipantDAO pd = new PaticipantDAO();
