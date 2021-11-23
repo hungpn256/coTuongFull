@@ -34,9 +34,7 @@ import model.Paticipant;
 public class ClientMainFrm extends JFrame implements ActionListener{
     private JMenuBar mnbMain;
     private JMenu mnUser;
-    private JMenu mnClient;
     private JMenuItem mniLogin;
-    private JMenuItem mniEditClient;
      
     private JTextField txtServerHost;
     private JTextField txtServerPort;
@@ -67,14 +65,8 @@ public class ClientMainFrm extends JFrame implements ActionListener{
         mnUser.add(mniLogin);
         mnbMain.add(mnUser);
          
-        mnClient = new JMenu("Customer");
-        mniEditClient = new JMenuItem("Edit customer");
-        mniEditClient.addActionListener(this);
-        mnClient.add(mniEditClient);
-        mnbMain.add(mnClient);
         this.setJMenuBar(mnbMain);
         mniLogin.setEnabled(false);
-        mniEditClient.setEnabled(false);
          
          
         JLabel lblTitle = new JLabel("Client TCP/IP");
@@ -153,7 +145,6 @@ public class ClientMainFrm extends JFrame implements ActionListener{
                     btnDisconnect.setEnabled(true);
                     btnConnect.setEnabled(false);
                     mniLogin.setEnabled(true);
-                    mniEditClient.setEnabled(true);
                 }else {
                     resetClient();
                 }
@@ -188,7 +179,6 @@ public class ClientMainFrm extends JFrame implements ActionListener{
         btnDisconnect.setEnabled(false);
         btnConnect.setEnabled(true);
         mniLogin.setEnabled(false);
-        mniEditClient.setEnabled(false);
     }
      
     public static void main(String[] args) {

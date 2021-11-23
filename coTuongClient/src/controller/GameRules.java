@@ -27,7 +27,6 @@ public class GameRules {
         int smallY;
         canMove = true;
 
-        // assigning values
         if (startX >= endX) {
             bigX = startX;
             smallX = endX;

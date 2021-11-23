@@ -82,35 +82,4 @@ public class PaticipantDAO extends DAO {
         trans.commit();
     }
     
-//    public PaticipantStat getMyRank(){
-//        PaticipantStat ps = new PaticipantStat();
-//        String sql = 
-//                "SELECT b.rank_p"
-//                + "   FROM ("
-//                + "     SELECT paticipantID, COUNT(*) soTranThang ,RANK() OVER(ORDER BY soTranThang) rank_p "
-//                + "     FROM tblPaticipantMatch a "
-//                + "     WHERE a.result = 'win' "
-//                + "     GROUP BY paticipantID) b"
-//                + "WHERE b.paticipantID = " + Navigator.getPaticipantLogin().getId();
-//        Query query = session.createNativeQuery(sql);
-//        List<Object[]> res = query.getResultList();
-//        ps.setRankWonGame(Integer.parseInt(res.get(0)[0].toString()));
-//        
-//        sql = 
-//               "SELECT (b.soTranThang/c.soTranDaChoi) rate,RANK() OVER(ORDER BY rate) rank_p "
-//                + "   FROM ("
-//                + "     SELECT paticipantID, COUNT(*) soTranThang"
-//                + "     FROM tblPaticipantMatch a "
-//                + "     WHERE a.result = 'win' "
-//                + "     GROUP BY a.paticipantID) b , INNER JOIN ("
-//                + "     SELECT paticipantID, COUNT(*) soTranDaChoi"
-//                + "     FROM tblPaticipantMatch"
-//                + "     GROUP BY paticipantID) c ON c.paticipantID = b.paticipantID)"
-//                + "WHERE b.paticipantID = " + Navigator.getPaticipantLogin().getId();
-//        query = session.createNativeQuery(sql);
-//        res = query.getResultList();
-//        ps.setRankWonRate(Integer.parseInt(res.get(0)[0].toString()));
-//        return ps;
-//    }
-    
 }

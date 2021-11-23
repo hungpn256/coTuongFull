@@ -438,9 +438,7 @@ public class BoardFrm extends JPanel implements MouseListener {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
-
         }
         if (interval == 0) {
             return 0;
