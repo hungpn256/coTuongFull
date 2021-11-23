@@ -5,9 +5,9 @@
         <group>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/view/HomeFrm.java</file>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/view/BoardFrm.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/view/InvitationJrm.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/view/SearchPaticipantFrm.java</file>
             <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/view/GameUIFrm.java</file>
-            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/controller/ClientCtr.java</file>
-            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/coTuongClient/src/controller/GameRules.java</file>
         </group>
     </open-files>
 </project-private>

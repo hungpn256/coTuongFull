@@ -217,8 +217,6 @@ public class SearchPaticipantFrm extends JFrame implements ActionListener{
         else{
             JOptionPane.showMessageDialog(this, "Mời thất bại");
         }
-        
- 
     }
  
     /**

@@ -81,8 +81,14 @@ public class ClubDAO extends DAO{
         session.clear();
         ci.getPaticipant().setClub(ci.getClub());
         session.update(ci.getPaticipant());
+        trans.commit();
+        trans = session.getTransaction();
+        if (!trans.isActive()) {
+            trans.begin();
+        }
         session.delete(ci);
         trans.commit();
+        
     }
     
     public void denyJoinClub(ClubInvitation ci){
