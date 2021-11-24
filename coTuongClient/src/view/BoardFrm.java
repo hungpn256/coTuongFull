@@ -75,7 +75,6 @@ public class BoardFrm extends JPanel implements MouseListener {
                 this.pieces[i][j] = null;
             }
         }
-        //Các quân cờ bên ĐỎ
         pieces[0][0] = new Piece(GameUIFrm.redColor, "車", 0, 0);
         pieces[1][0] = new Piece(GameUIFrm.redColor, "馬", 1, 0);
         pieces[2][0] = new Piece(GameUIFrm.redColor, "相", 2, 0);
@@ -93,7 +92,7 @@ public class BoardFrm extends JPanel implements MouseListener {
         pieces[6][3] = new Piece(GameUIFrm.redColor, "兵", 6, 3);
         pieces[8][3] = new Piece(GameUIFrm.redColor, "兵", 8, 3);
 
-        //Các quân cờ bên TRẮNG
+
         pieces[0][9] = new Piece(GameUIFrm.whiteColor, "車", 0, 9);
         pieces[1][9] = new Piece(GameUIFrm.whiteColor, "馬", 1, 9);
         pieces[2][9] = new Piece(GameUIFrm.whiteColor, "象", 2, 9);

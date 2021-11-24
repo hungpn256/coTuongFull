@@ -2,6 +2,23 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Friend.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/FriendInvitation.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Paticipant.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/ClubInvitation.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/PaticipantRoom.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/PaticipantMatch.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Movement.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Match.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/ObjectWrapper.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/IPAddress.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Room.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Club.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Piece.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/Board.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/RoomInvitation.java</file>
+            <file>file:/Users/phamhung/NetBeansProjects/coTuongFull/cotuongModel/src/model/PaticipantStat.java</file>
+        </group>
     </open-files>
 </project-private>
