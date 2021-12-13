@@ -33,6 +33,7 @@ import model.Piece;
 
 public class BoardFrm extends JPanel implements MouseListener {
 
+    boolean myRoom = false;
     private int width;	// khoảng cách giữa các dòng
     boolean selected = false;
     int startX = -1;	// vị trí băt đầu
@@ -75,40 +76,40 @@ public class BoardFrm extends JPanel implements MouseListener {
                 this.pieces[i][j] = null;
             }
         }
-        pieces[0][0] = new Piece(GameUIFrm.redColor, "車", 0, 0);
-        pieces[1][0] = new Piece(GameUIFrm.redColor, "馬", 1, 0);
-        pieces[2][0] = new Piece(GameUIFrm.redColor, "相", 2, 0);
-        pieces[3][0] = new Piece(GameUIFrm.redColor, "仕", 3, 0);
-        pieces[4][0] = new Piece(GameUIFrm.redColor, "帥", 4, 0);
-        pieces[5][0] = new Piece(GameUIFrm.redColor, "仕", 5, 0);
-        pieces[6][0] = new Piece(GameUIFrm.redColor, "相", 6, 0);
-        pieces[7][0] = new Piece(GameUIFrm.redColor, "馬", 7, 0);
-        pieces[8][0] = new Piece(GameUIFrm.redColor, "車", 8, 0);
-        pieces[1][2] = new Piece(GameUIFrm.redColor, "炮", 1, 2);
-        pieces[7][2] = new Piece(GameUIFrm.redColor, "炮", 7, 2);
-        pieces[0][3] = new Piece(GameUIFrm.redColor, "兵", 0, 3);
-        pieces[2][3] = new Piece(GameUIFrm.redColor, "兵", 2, 3);
-        pieces[4][3] = new Piece(GameUIFrm.redColor, "兵", 4, 3);
-        pieces[6][3] = new Piece(GameUIFrm.redColor, "兵", 6, 3);
-        pieces[8][3] = new Piece(GameUIFrm.redColor, "兵", 8, 3);
+        
+        pieces[0][9] = new Piece(GameUIFrm.redColor, "車", 0, 9);    
+        pieces[1][9] = new Piece(GameUIFrm.redColor, "馬", 1, 9);
+        pieces[2][9] = new Piece(GameUIFrm.redColor, "相", 2, 9);
+        pieces[3][9] = new Piece(GameUIFrm.redColor, "仕", 3, 9);
+        pieces[4][9] = new Piece(GameUIFrm.redColor, "帥", 4, 9);
+        pieces[5][9] = new Piece(GameUIFrm.redColor, "仕", 5, 9);
+        pieces[6][9] = new Piece(GameUIFrm.redColor, "相", 6, 9);
+        pieces[7][9] = new Piece(GameUIFrm.redColor, "馬", 7, 9);
+        pieces[8][9] = new Piece(GameUIFrm.redColor, "車", 8, 9);
+        pieces[1][7] = new Piece(GameUIFrm.redColor, "炮", 1, 7);
+        pieces[7][7] = new Piece(GameUIFrm.redColor, "炮", 7, 7);
+        pieces[0][6] = new Piece(GameUIFrm.redColor, "兵", 0, 6);
+        pieces[2][6] = new Piece(GameUIFrm.redColor, "兵", 2, 6);
+        pieces[4][6] = new Piece(GameUIFrm.redColor, "兵", 4, 6);
+        pieces[6][6] = new Piece(GameUIFrm.redColor, "兵", 6, 6);
+        pieces[8][6] = new Piece(GameUIFrm.redColor, "兵", 8, 6);
 
-
-        pieces[0][9] = new Piece(GameUIFrm.whiteColor, "車", 0, 9);
-        pieces[1][9] = new Piece(GameUIFrm.whiteColor, "馬", 1, 9);
-        pieces[2][9] = new Piece(GameUIFrm.whiteColor, "象", 2, 9);
-        pieces[3][9] = new Piece(GameUIFrm.whiteColor, "士", 3, 9);
-        pieces[4][9] = new Piece(GameUIFrm.whiteColor, "將", 4, 9);
-        pieces[5][9] = new Piece(GameUIFrm.whiteColor, "士", 5, 9);
-        pieces[6][9] = new Piece(GameUIFrm.whiteColor, "象", 6, 9);
-        pieces[7][9] = new Piece(GameUIFrm.whiteColor, "馬", 7, 9);
-        pieces[8][9] = new Piece(GameUIFrm.whiteColor, "車", 8, 9);
-        pieces[1][7] = new Piece(GameUIFrm.whiteColor, "砲", 1, 7);
-        pieces[7][7] = new Piece(GameUIFrm.whiteColor, "砲", 7, 7);
-        pieces[0][6] = new Piece(GameUIFrm.whiteColor, "卒", 0, 6);
-        pieces[2][6] = new Piece(GameUIFrm.whiteColor, "卒", 2, 6);
-        pieces[4][6] = new Piece(GameUIFrm.whiteColor, "卒", 4, 6);
-        pieces[6][6] = new Piece(GameUIFrm.whiteColor, "卒", 6, 6);
-        pieces[8][6] = new Piece(GameUIFrm.whiteColor, "卒", 8, 6);
+        pieces[0][0] = new Piece(GameUIFrm.whiteColor, "車", 0, 0);
+        pieces[1][0] = new Piece(GameUIFrm.whiteColor, "馬", 1, 0);
+        pieces[2][0] = new Piece(GameUIFrm.whiteColor, "象", 2, 0);
+        pieces[3][0] = new Piece(GameUIFrm.whiteColor, "士", 3, 0);
+        pieces[4][0] = new Piece(GameUIFrm.whiteColor, "將", 4, 0);
+        pieces[5][0] = new Piece(GameUIFrm.whiteColor, "士", 5, 0);
+        pieces[6][0] = new Piece(GameUIFrm.whiteColor, "象", 6, 0);
+        pieces[7][0] = new Piece(GameUIFrm.whiteColor, "馬", 7, 0);
+        pieces[8][0] = new Piece(GameUIFrm.whiteColor, "車", 8, 0);
+        pieces[1][2] = new Piece(GameUIFrm.whiteColor, "砲", 1, 2);
+        pieces[7][2] = new Piece(GameUIFrm.whiteColor, "砲", 7, 2);
+        pieces[0][3] = new Piece(GameUIFrm.whiteColor, "卒", 0, 3);
+        pieces[2][3] = new Piece(GameUIFrm.whiteColor, "卒", 2, 3);
+        pieces[4][3] = new Piece(GameUIFrm.whiteColor, "卒", 4, 3);
+        pieces[6][3] = new Piece(GameUIFrm.whiteColor, "卒", 6, 3);
+        pieces[8][3] = new Piece(GameUIFrm.whiteColor, "卒", 8, 3);
     }
 
     public void newGame() {
@@ -117,10 +118,10 @@ public class BoardFrm extends JPanel implements MouseListener {
         startY = -1;
         endX = -1;		// vị trí kết thúc
         endY = -1;
-        
+
         interval = 10;
-        cchess.txtTime.setText(interval+"");
-        if(timer != null){
+        cchess.txtTime.setText(interval + "");
+        if (timer != null) {
             timer.cancel();
         }
         selected = false;
@@ -135,6 +136,12 @@ public class BoardFrm extends JPanel implements MouseListener {
         board.setKing1y(0);
         board.setKing2x(4);
         board.setKing2y(9);
+        if(mySocket.getPaticipantLogin().getId() == cchess.room.getCreatedBy().getId()){
+            myRoom = true;
+        }
+        else{
+            this.swapBoard();
+        }
     }
 
     public void paint(Graphics g1) {
@@ -265,12 +272,12 @@ public class BoardFrm extends JPanel implements MouseListener {
     public void noFocus(int i, int j) {
         if (this.pieces[i][j] != null) {
             if (this.paticipantMatch.getColor().equals("red")) {
-                if (this.pieces[i][j].getColor().equals(GameUIFrm.redColor)) {
-                    this.pieces[i][j].setSelected(true);
-                    selected = true;
-                    startX = i;
-                    startY = j;
-                }
+            if (this.pieces[i][j].getColor().equals(GameUIFrm.redColor)) {
+                this.pieces[i][j].setSelected(true);
+                selected = true;
+                startX = i;
+                startY = j;
+            }
             } else {
                 if (this.pieces[i][j].getColor().equals(GameUIFrm.whiteColor)) {
                     this.pieces[i][j].setSelected(true);
@@ -314,7 +321,6 @@ public class BoardFrm extends JPanel implements MouseListener {
     }
 
     public void receivedStartGameProcessing(ObjectWrapper data) {
-        System.out.println("start");
         String str = "Bat dau tran dau";
         if (data.getData() instanceof Match) {
             this.match = (Match) data.getData();
@@ -327,12 +333,12 @@ public class BoardFrm extends JPanel implements MouseListener {
                     if (i == 0) {
                         this.myTurn = true;
                         str += "\nBan di truoc";
+                        myRoom = true;
                     }
                 } else {
                     challenger = p;
                 }
             }
-            System.out.println("paticipant Math " + paticipantMatch.getPaticipant().getId());
             this.cchess.setEnable(false);
             scheduleMove();
             JOptionPane.showMessageDialog(this, str);
@@ -347,8 +353,11 @@ public class BoardFrm extends JPanel implements MouseListener {
             Movement m = board.getLastMovement();
             this.board = board;
             this.myTurn = !this.myTurn;
-            System.err.println("this.board.myTurn"+this.myTurn);
+            System.err.println("this.board.myTurn" + this.myTurn);
             this.pieces = board.getPieces();
+            if (m.getSender().getId() != paticipantMatch.getId()) {
+                swapBoard();
+            }
             this.repaint();
             startX = -1;
             startY = -1;
@@ -356,20 +365,18 @@ public class BoardFrm extends JPanel implements MouseListener {
             endY = -1;
             selected = false;
             interval = 10;
-        }
-        else{
-           if(data.getData().equals("win")){
-               win();
-           }
-           else if(data.getData().equals("lose")){
-               lose();
-           }
+        } else {
+            if (data.getData().equals("win")) {
+                win();
+            } else if (data.getData().equals("lose")) {
+                lose();
+            }
         }
     }
 
     public void receivedChallengerQuitGameProcessing(ObjectWrapper data) {
         if (data.getData().equals("win")) {
-            JOptionPane.showMessageDialog(this, "Đối thủ đã thoát, Bạn đã được xử thắng");     
+            JOptionPane.showMessageDialog(this, "Đối thủ đã thoát, Bạn đã được xử thắng");
             mySocket.removeFunction(this);
             mySocket.removeFunction(cchess);
             cchess.dispose();
@@ -443,6 +450,17 @@ public class BoardFrm extends JPanel implements MouseListener {
             return 0;
         }
         return --interval;
+    }
+
+    public void swapBoard() {
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 5; ++j) {
+                Piece tmp = this.board.pieces[i][j];
+                this.board.pieces[i][j] = this.board.pieces[8 - i][9 - j];
+                this.board.pieces[8 - i][9 - j] = tmp;
+            }
+        }
+        this.pieces = this.board.pieces;
     }
 
 }

@@ -130,6 +130,7 @@ public class HomeFrm extends javax.swing.JFrame {
             Room room = (Room)data.getData();
             System.out.println(room.getId());
             GameUIFrm gameView = new GameUIFrm(mySocket,room);
+//            gameView.board.swapBoard();
             gameView.setVisible(true);
             mySocket.removeFunction(this);
             this.dispose();
