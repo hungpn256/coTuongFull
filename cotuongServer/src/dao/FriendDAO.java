@@ -30,11 +30,7 @@ public class FriendDAO extends DAO {
         return result;
     }
     
-    public void requestAddFriend(Paticipant sender,Paticipant accepter) {
-        FriendInvitation fi = new FriendInvitation();
-        fi.setSender(sender);
-        fi.setAccepter(accepter);
-        fi.setStatus("pending");
+    public void requestAddFriend(FriendInvitation fi) {
         Transaction trans = session.getTransaction();
         if (!trans.isActive()) {
             trans.begin();

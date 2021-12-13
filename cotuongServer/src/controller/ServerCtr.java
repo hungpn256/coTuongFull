@@ -324,7 +324,8 @@ public class ServerCtr {
                                 try {
                                     System.out.println(this.paticipant.getId() + " " + p.getId());
                                     if (paticipant != null) {
-                                        fd.requestAddFriend(this.paticipant, p);
+                                        FriendInvitation f0 = new FriendInvitation(this.paticipant, p,"pending");
+                                        fd.requestAddFriend(f0);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_REQUEST_ADD_FRIEND, "ok"));
                                         System.out.println("add fr oke");
                                     } else {
