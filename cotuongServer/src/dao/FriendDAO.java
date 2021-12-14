@@ -7,7 +7,7 @@ package dao;
 
 import java.util.ArrayList;
 import javax.swing.table.TableCellRenderer;
-import model.Friend;
+import model.Friendship;
 import model.FriendInvitation;
 import model.Paticipant;
 import org.hibernate.Transaction;
@@ -41,11 +41,11 @@ public class FriendDAO extends DAO {
     }
     
     public void acceptFriend(FriendInvitation fi) {
-        Friend fr = new Friend();
+        Friendship fr = new Friendship();
         fr.setPaticipant(fi.getAccepter());
         fr.setFriend(fi.getSender());
         
-        Friend fr2 = new Friend();
+        Friendship fr2 = new Friendship();
         fr2.setPaticipant(fi.getSender());
         fr2.setFriend(fi.getAccepter());
         
@@ -84,9 +84,9 @@ public class FriendDAO extends DAO {
         return result;
     }
     
-    public ArrayList<Friend> getAllFriend(Paticipant paticipantLogin) {
+    public ArrayList<Friendship> getAllFriend(Paticipant paticipantLogin) {
         Query query = session.createQuery("from Friend f where f.paticipant.id = " + paticipantLogin.getId());
-        ArrayList<Friend> result = (ArrayList<Friend>) query.getResultList();
+        ArrayList<Friendship> result = (ArrayList<Friendship>) query.getResultList();
         System.out.println(result.size()+"size all friend");
         return result;
     }
@@ -96,13 +96,13 @@ public class FriendDAO extends DAO {
                 + paticipantLogin.getId() 
                 +" and f.friend.id = "+ p.getId()
                 +") or ( f.paticipant.id = " +p.getId() + " and f.friend.id = "+ paticipantLogin.getId() +")" );
-        ArrayList<Friend> result = (ArrayList<Friend>) query.getResultList();
+        ArrayList<Friendship> result = (ArrayList<Friendship>) query.getResultList();
         
         Transaction trans = session.getTransaction();
         if (!trans.isActive()) {
             trans.begin();
         }
-        for (Friend friend : result) {
+        for (Friendship friend : result) {
             session.clear();
             session.delete(friend);
         }

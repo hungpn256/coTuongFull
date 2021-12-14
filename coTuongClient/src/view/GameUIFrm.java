@@ -18,7 +18,7 @@ import java.util.TimerTask;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import model.Board;
-import model.Friend;
+import model.Friendship;
 import model.Match;
 import model.ObjectWrapper;
 import model.Paticipant;
@@ -40,7 +40,7 @@ public class GameUIFrm extends javax.swing.JFrame {
     private ClientCtr mySocket;
     Paticipant paticipantLogin;
     PaticipantRoom paticipantRoom;
-    List<Friend> friendOl;
+    List<Friendship> friendOl;
     public int myColor = 0; // 0 = MÀU ĐỎ, 1 = MÀU TRẮNG
     /**
      * Creates new form GameUIFrm
@@ -302,9 +302,9 @@ public class GameUIFrm extends javax.swing.JFrame {
 
         if (data.getData() instanceof List) {
             friendOl.clear();
-            System.out.println("get friend success" + ((List<Friend>) data.getData()).size());
-            paticipantLogin.setListFriend((List<Friend>) data.getData());
-            for (Friend x : paticipantLogin.getListFriend()) {
+            System.out.println("get friend success" + ((List<Friendship>) data.getData()).size());
+            paticipantLogin.setListFriend((List<Friendship>) data.getData());
+            for (Friendship x : paticipantLogin.getListFriend()) {
                 if (x.getFriend().getStatus().equals("online")) {
                     friendOl.add(x);
                 }
@@ -346,7 +346,7 @@ public class GameUIFrm extends javax.swing.JFrame {
 
     public void setComboBox() {
         jComboBox1.removeAllItems();
-        for (Friend x : friendOl) {
+        for (Friendship x : friendOl) {
             jComboBox1.addItem(x.getFriend().getNickName() + " #" + x.getFriend().getId());
         }
     }

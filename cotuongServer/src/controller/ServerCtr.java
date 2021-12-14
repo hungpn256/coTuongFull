@@ -21,7 +21,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Club;
-import model.Friend;
+import model.Friendship;
 import model.FriendInvitation;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -188,16 +188,16 @@ public class ServerCtr {
                                 if (paticipant != null) {
                                     this.paticipant = paticipant;
                                     System.out.println(paticipant.getId());
-                                    List<Friend> friends = paticipant.getListFriend();
+                                    List<Friendship> friends = paticipant.getListFriend();
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LOGIN_PATICIPANT, paticipant));
-                                    for (Friend f : friends) {
+                                    for (Friendship f : friends) {
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 FriendDAO fd = new FriendDAO();
 
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -222,17 +222,17 @@ public class ServerCtr {
                                     this.paticipant.setStatus(paticipant.getStatus());
                                     pd.update(this.paticipant);
                                     this.paticipant = paticipant;
-                                    List<Friend> friends = paticipant.getListFriend();
+                                    List<Friendship> friends = paticipant.getListFriend();
                                     System.out.println(paticipant.getListFriend().size() + "size friend");
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_UPDATE_STATUS_PATICIPANT, "ok"));
-                                    for (Friend f : friends) {
+                                    for (Friendship f : friends) {
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 FriendDAO fd = new FriendDAO();
 
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -272,15 +272,15 @@ public class ServerCtr {
                                 if (paticipant != null) {
                                     PaticipantDAO pd = new PaticipantDAO();
                                     pd.logout(this.paticipant);
-                                    List<Friend> friends = paticipant.getListFriend();
+                                    List<Friendship> friends = paticipant.getListFriend();
                                     System.out.println(paticipant.getListFriend().size() + "size friend");
-                                    for (Friend f : friends) {
+                                    for (Friendship f : friends) {
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 FriendDAO fd = new FriendDAO();
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -318,14 +318,12 @@ public class ServerCtr {
                                 break;
                             }
                             case ObjectWrapper.REQUEST_ADD_FRIEND: {
-                                Paticipant p = (Paticipant) data.getData();
+                                FriendInvitation fi = (FriendInvitation) data.getData();
                                 FriendDAO fd = new FriendDAO();
 
                                 try {
-                                    System.out.println(this.paticipant.getId() + " " + p.getId());
                                     if (paticipant != null) {
-                                        FriendInvitation f0 = new FriendInvitation(this.paticipant, p,"pending");
-                                        fd.requestAddFriend(f0);
+                                        fd.requestAddFriend(fi);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_REQUEST_ADD_FRIEND, "ok"));
                                         System.out.println("add fr oke");
                                     } else {
@@ -370,7 +368,7 @@ public class ServerCtr {
                                             if (x.getPaticipant() != null && fi.getSender().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -431,7 +429,7 @@ public class ServerCtr {
 
                                 try {
                                     if (paticipant != null) {
-                                        List<Friend> listFriend = fd.getAllFriend(this.paticipant);
+                                        List<Friendship> listFriend = fd.getAllFriend(this.paticipant);
                                         oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
                                     } else {
                                         System.out.println("paticipant null");
@@ -768,13 +766,13 @@ public class ServerCtr {
                                         }
 
                                         FriendDAO fd = new FriendDAO();
-                                        List<Friend> friends = fd.getAllFriend(p1);
-                                        for (Friend f : friends) {
+                                        List<Friendship> friends = fd.getAllFriend(p1);
+                                        for (Friendship f : friends) {
                                             for (ServerProcessing x : myProcess) {
                                                 if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                     ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                     try {
-                                                        List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                        List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                         os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                     } catch (Exception e) {
@@ -785,14 +783,14 @@ public class ServerCtr {
                                                 }
                                             }
                                         }
-                                        List<Friend> friends2 = fd.getAllFriend(p2);
-                                        for (Friend f : friends2) {
+                                        List<Friendship> friends2 = fd.getAllFriend(p2);
+                                        for (Friendship f : friends2) {
                                             for (ServerProcessing x : myProcess) {
                                                 if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                     ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
 
                                                     try {
-                                                        List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                        List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                         os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                     } catch (Exception e) {
@@ -868,13 +866,13 @@ public class ServerCtr {
                                     pd.update(p1);
 
                                     FriendDAO fd = new FriendDAO();
-                                    List<Friend> friends = fd.getAllFriend(p1);
-                                    for (Friend f : friends) {
+                                    List<Friendship> friends = fd.getAllFriend(p1);
+                                    for (Friendship f : friends) {
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -885,14 +883,14 @@ public class ServerCtr {
                                             }
                                         }
                                     }
-                                    List<Friend> friends2 = fd.getAllFriend(p2);
-                                    for (Friend f : friends2) {
+                                    List<Friendship> friends2 = fd.getAllFriend(p2);
+                                    for (Friendship f : friends2) {
                                         for (ServerProcessing x : myProcess) {
                                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                                 ObjectOutputStream os = new ObjectOutputStream(x.getMySocket().getOutputStream());
 
                                                 try {
-                                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                                     os.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                                 } catch (Exception e) {
@@ -1003,16 +1001,16 @@ public class ServerCtr {
                 if (paticipant != null) {
                     PaticipantDAO pd = new PaticipantDAO();
                     pd.logout(this.paticipant);
-                    List<Friend> friends = paticipant.getListFriend();
+                    List<Friendship> friends = paticipant.getListFriend();
                     System.out.println(paticipant.getListFriend().size() + "size friend");
-                    for (Friend f : friends) {
+                    for (Friendship f : friends) {
                         for (ServerProcessing x : myProcess) {
                             if (x.getPaticipant() != null && f.getFriend().getId() == x.getPaticipant().getId()) {
                                 try {
                                     ObjectOutputStream oss = new ObjectOutputStream(x.getMySocket().getOutputStream());
                                     FriendDAO fd = new FriendDAO();
 
-                                    List<Friend> listFriend = fd.getAllFriend(x.getPaticipant());
+                                    List<Friendship> listFriend = fd.getAllFriend(x.getPaticipant());
                                     oss.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_GET_ALL_FRIEND, listFriend));
 
                                 } catch (Exception ee) {

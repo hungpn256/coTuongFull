@@ -52,7 +52,7 @@ public class Paticipant implements Serializable{
     private Club club;
     
     @OneToMany(mappedBy = "paticipant",cascade = CascadeType.PERSIST)
-    private List<Friend> listFriend = new ArrayList<>();
+    private List<Friendship> listFriend = new ArrayList<>();
     
     @OneToMany(mappedBy = "accepter", cascade = CascadeType.PERSIST)
     private List<FriendInvitation> listPendingFriend = new ArrayList<>();
@@ -152,11 +152,11 @@ public class Paticipant implements Serializable{
     }
 
 
-    public List<Friend> getListFriend() {
+    public List<Friendship> getListFriend() {
         return listFriend;
     }
 
-    public void setListFriend(List<Friend> listFriend) {
+    public void setListFriend(List<Friendship> listFriend) {
         this.listFriend = listFriend;
     }
 

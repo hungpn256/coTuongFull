@@ -148,7 +148,8 @@ private ClientCtr mySocket;
     }
     
     public void btnAddClick(int i){
-        mySocket.sendData(new ObjectWrapper(ObjectWrapper.REQUEST_ADD_FRIEND, listPaticipantAddFriend.get(i)));
+        FriendInvitation fi = new FriendInvitation(mySocket.getPaticipantLogin(), listPaticipantAddFriend.get(i), "pending");
+        mySocket.sendData(new ObjectWrapper(ObjectWrapper.REQUEST_ADD_FRIEND, fi));
     }
     class AddFriendTableModel extends DefaultTableModel {
         private String[] columnNames = {"Id", "Name", "Addfriend"};

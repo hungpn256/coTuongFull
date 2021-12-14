@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.util.*;
 import java.io.*;
 import java.net.Socket;
-import model.Friend;
+import model.Friendship;
 import model.IPAddress;
 import model.ObjectWrapper;
 import model.Paticipant;

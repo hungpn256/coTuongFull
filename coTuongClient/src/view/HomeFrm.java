@@ -15,7 +15,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import model.Friend;
+import model.Friendship;
 import model.ObjectWrapper;
 import model.Paticipant;
 import model.PaticipantRoom;
@@ -61,22 +61,22 @@ public class HomeFrm extends javax.swing.JFrame {
     }
 
     public void setTableFriend() {
-        List<Friend> friends = paticipantLogin.getListFriend();
+        List<Friendship> friends = paticipantLogin.getListFriend();
         DefaultTableModel dtm = (DefaultTableModel) tableFriend.getModel();
         dtm.setRowCount(0);
-        for (Friend f : friends) {
+        for (Friendship f : friends) {
             if (f.getFriend().getStatus().equals("online")) {
                 dtm.addRow(new Object[]{f.getFriend().getId(), f.getFriend().getNickName(), f.getFriend().getStatus()});
             }
 
         }
-        for (Friend f : friends) {
+        for (Friendship f : friends) {
             if (f.getFriend().getStatus().equals("busy")) {
                 dtm.addRow(new Object[]{f.getFriend().getId(), f.getFriend().getNickName(), f.getFriend().getStatus()});
             }
 
         }
-        for (Friend f : friends) {
+        for (Friendship f : friends) {
             if (f.getFriend().getStatus().equals("offline")) {
                 dtm.addRow(new Object[]{f.getFriend().getId(), f.getFriend().getNickName(), f.getFriend().getStatus()});
 
@@ -89,7 +89,7 @@ public class HomeFrm extends javax.swing.JFrame {
         
         if (data.getData() instanceof List) {
             System.out.println("get friend success"+ data.getData());
-            paticipantLogin.setListFriend((List<Friend>)data.getData());
+            paticipantLogin.setListFriend((List<Friendship>)data.getData());
             System.out.println("friend current"+ mySocket.getPaticipantLogin().getListFriend().size());
             setTableFriend();
         } else {
