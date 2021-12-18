@@ -25,7 +25,7 @@ public class FriendDAO extends DAO {
     public ArrayList<Paticipant> searchAddFriend(Paticipant paticipantLogin,String key) {
         Query query = session.createQuery("from Paticipant p where p.id != "+ paticipantLogin.getId()
                 + " and (p.username like '%" + key+"%'"+" or p.nickName like '%" + key+"%') "
-                + " and p.id NOT IN (SELECT f.paticipant.id from Friend f where f.friend.id = "+ paticipantLogin.getId()+" )");
+                + " and p.id NOT IN (SELECT f.paticipant.id from Friendship f where f.friend.id = "+ paticipantLogin.getId()+" )");
         ArrayList<Paticipant> result = (ArrayList<Paticipant>) query.getResultList();
         return result;
     }
@@ -85,14 +85,14 @@ public class FriendDAO extends DAO {
     }
     
     public ArrayList<Friendship> getAllFriend(Paticipant paticipantLogin) {
-        Query query = session.createQuery("from Friend f where f.paticipant.id = " + paticipantLogin.getId());
+        Query query = session.createQuery("from Friendship f where f.paticipant.id = " + paticipantLogin.getId());
         ArrayList<Friendship> result = (ArrayList<Friendship>) query.getResultList();
         System.out.println(result.size()+"size all friend");
         return result;
     }
     
     public void removeFriend(Paticipant paticipantLogin,Paticipant p) {
-        Query query = session.createQuery("from Friend f where (f.paticipant.id = " 
+        Query query = session.createQuery("from Friendship f where (f.paticipant.id = " 
                 + paticipantLogin.getId() 
                 +" and f.friend.id = "+ p.getId()
                 +") or ( f.paticipant.id = " +p.getId() + " and f.friend.id = "+ paticipantLogin.getId() +")" );

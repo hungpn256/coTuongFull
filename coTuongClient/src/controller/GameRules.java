@@ -46,9 +46,11 @@ public class GameRules {
             this.rook(bigX, smallX, bigY, smallY);
         } else if (name.equals("馬")) {
             this.knight(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
-        } else if (name.equals("相")) {
-            this.bishop1(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
-        } else if (name.equals("象")) {
+        } 
+//        else if (name.equals("相")) {
+//            this.bishop1(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
+//        } 
+        else if (name.equals("象") || name.equals("相")) {
             this.bishop2(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
         } else if (name.equals("士") || name.equals("仕")) {
             this.guard(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
@@ -56,9 +58,9 @@ public class GameRules {
             this.king(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
         } else if (name.equals("砲") || name.equals("炮")) {
             this.cannon(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
-        } else if (name.equals("兵")) {
-            this.pawn1(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
-        } else if (name.equals("卒")) {
+//        } else if (name.equals("兵")) {
+//            this.pawn1(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
+        } else if (name.equals("卒") || name.equals("兵")) {
             this.pawn2(bigX, smallX, bigY, smallY, startX, startY, endX, endY);
         }
         return canMove;

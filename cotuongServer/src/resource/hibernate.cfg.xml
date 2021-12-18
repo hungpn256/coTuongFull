@@ -6,7 +6,7 @@
 <hibernate-configuration>
 	<session-factory>
 	    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-	    <property name="connection.url">jdbc:mysql://localhost:104/chess</property>
+	    <property name="connection.url">jdbc:mysql://localhost:3306/chess</property>
 	    <property name="hibernate.connection.characterEncoding">UTF-8</property>
 	    <property name="hibernate.connection.autoReconnect">true</property> 
 	    <property name="hibernate.connection.useSSL">false</property>
@@ -16,7 +16,7 @@
 	    <property name="hibernate.hbm2ddl.auto">validate</property>
 	    <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 	    <property name="connection.username">root</property>
-	    <property name="connection.password">010420</property>
+	    <property name="connection.password">02100120</property>
 	    <property name="connection.pool_size">100</property>
 	    <property name="current_session_context_class">thread</property>
 	    <property name="show_sql">true</property>
@@ -28,7 +28,7 @@
 	    <mapping class="model.Club"/>    
             <mapping class="model.ClubInvitation"/>
             <mapping class="model.FriendInvitation"/>
-            <mapping class="model.Friend"/>
+            <mapping class="model.Friendship"/>
             <mapping class="model.Match"/>
             <mapping class="model.PaticipantMatch"/>
             <mapping class="model.PaticipantRoom"/>
